@@ -145,3 +145,12 @@ La mejor solución final la conseguí incorporando un poco de búsqueda local so
 Una observación interesante es que es posible modelar el problema original (**completo**) utilizando programación lineal entera. Faltando unas horas para que termine la competencia, un amigo que estaba jugando (*fedepousa*) me pasó el modelo que había armado dado que él se estaba yendo de vacaciones y no podía dedicarle más tiempo. Su modelo es exacto para el problema completo, pero es impensable correrlo sobre toda la instancia. Tomé su modelo y lo incorporé como un operador de búsqueda local más, aplicándolo en *chunks* de mi mejor recorrido. Es un operador costoso en términos de tiempo, y aplicándolo en sub-recorridos de 20 ciudades, cada 20 ciudades, tardaba un poco menos de 2hs. Si bien se está resolviendo el **óptimo** en cada *chunk*, se corre el riesgo de empeorar la solución total dado que el operador no tiene visibilidad global del recorrido. Una combinación final de este operador, los intercambios, y nuevamente la asignación óptima que presenté antes, fue la que me dejó en el cuarto puesto con un recorrido de **$63801.03**. Gracias *fedepousa*!
 
 Si bien el tiempo que pude dedicar durante los días de la competencia fue acotado, creo que sería valioso experimentar con más operadores de búsqueda local (y en particular con el modelo exacto para todo el problema).
+
+# Bibliografía
+Si te gustó la forma de pensar el problema, o tenés curiosidad sobre programación lineal entera o el problema del viajante de comercio, te recomiendo:
+
+* [Discrete-optimization](https://www.coursera.org/learn/discrete-optimization), un gran curso sobre Optimización Discreta en general (y programación entera en particular).
+* Cook, W. (2012). In pursuit of the traveling salesman: mathematics at the limits of computation. Princeton University Press.
+* Applegate, D. L., Bixby, R. E., Chvatal, V., & Cook, W. J. (2011). The traveling salesman problem: a computational study. Princeton university press.
+* Wolsey, L. A. (1998). Integer programming. Wiley.
+* Williams, H. P. (2013). Model building in mathematical programming. John Wiley & Sons.
