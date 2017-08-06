@@ -226,7 +226,7 @@ social_icons:
   # KeyMapsToSocialItemKey: NameOfTheIconFromFontAwesome
   GitHub: github
   Twitter: twitter
-  Weibo: weibo
+  # Weibo: weibo
 
 
 # Sidebar Avatar

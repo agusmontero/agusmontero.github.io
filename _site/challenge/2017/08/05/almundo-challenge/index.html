@@ -1,0 +1,935 @@
+
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html class="theme-next muse use-motion" lang="en">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/assets/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/assets/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/assets/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="tsp,integer-programming,challenge," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Welcome!" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.">
+<meta name="keywords" content="tsp, integer-programming, challenge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AlMundo Challenge - ECI 2017">
+<meta property="og:url" content="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">
+<meta property="og:site_name" content="Welcome!">
+<meta property="og:description" content="La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AlMundo Challenge - ECI 2017">
+<meta name="twitter:description" content="La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.">
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://localhost:4000/"/>
+
+
+
+
+
+  <title>AlMundo Challenge - ECI 2017</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"> <div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Welcome!</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+<div id="posts" class="posts-expand">
+  
+  
+
+  
+
+  
+  
+  
+
+  <article class="post post-type- " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Agus Montero">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="assets/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Welcome!">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+          
+          
+            AlMundo Challenge - ECI 2017
+          
+        </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-05T00:00:00-03:00">
+                2017-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/category/#/challenge" itemprop="url" rel="index">
+                    <span itemprop="name">challenge</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+            
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>La semana pasada participé en la competencia <a href="https://almundo.com.ar/eci/contest">AlMundo Challenge</a>
+organizada por <a href="https://almundo.com.ar/">almundo.com</a> en el contexto de la <a href="https://www.dc.uba.ar/events/eci/2017">ECI2017</a>.</p>
+
+<p>El problema me pareció interesante, y si bien el modelo con el que trabajé quedó en 4to puesto <a href="https://almundo.com.ar/eci/ranking">(ranking)</a>, me gustaría compartirlo como un ejemplo de aplicación de programación lineal entera.</p>
+
+<!--
+One of the rewards of switching my website to [Jekyll](http://jekyllrb.com/) is the
+ability to support **MathJax**, which means I can write LaTeX-like equations that get
+nicely displayed in a web browser, like this one \\( \sqrt{\frac{n!}{k!(n-k)!}} \\) or
+this one \\( x^2 + y^2 = r^2 \\). -->
+
+<h1 id="el-problema">El Problema</h1>
+
+<p>La descripción completa del problema está <a href="https://almundo.com.ar/eci/contest">acá</a>.</p>
+
+<p>En resumen, se tienen las coordenadas de 41011 ciudades, y un turista que debe volar a <strong>todas</strong> las ciudades, visitando cada una de ellas <strong>exactamente una vez</strong>. Además, en cada vuelo debe decidir qué agencia de viajes usar. Existen 4 agencias de viaje, y cada una ofrece descuentos si se cumplen determinadas condiciones. Por ejemplo, una de las agencias otorga un 35% de descuento en caso de volar con ella 3 veces consecutivas.</p>
+
+<p>El objetivo del problema es decidir <em>en qué orden</em> se deben visitar las ciudades y <em>con qué agencia</em> en cada vuelo, buscando minimizar el costo total, teniendo en cuenta que todas las agencias tienen la misma tarifa: $0.01 por Km.</p>
+
+<p>Una parte de este problema (<em>en qué orden</em>) está relacionada con otro problema muy famoso: <a href="https://es.wikipedia.org/wiki/Problema_del_viajante">El problema del viajante de comercio</a>, muy estudiado y para el cual existe <a href="http://www.math.uwaterloo.ca/tsp/index.html">mucha literatura</a>.</p>
+
+<h1 id="solución-propuesta">Solución propuesta</h1>
+
+<p>Una de mis herramientas favoritas para atacar problemas de optimización es la <a href="https://en.wikipedia.org/wiki/Integer_programming"><strong>programación lineal entera</strong></a>. Sin entrar en muchos detalles, la idea es construir un modelo matemático que describa las condiciones impuestas por el problema y la función objetivo que se quiere minimizar. Como su nombre lo indica, es importante que las relaciones entre las variables del modelo sean <strong>lineales</strong>.</p>
+
+<p>Decidí partir el problema original en dos partes: 1) obtener un recorrido inicial sin tener en cuenta las agencias, y en consecuencia sin descuentos (el recorrido debe visitar todas las ciudades exactamente una vez y sea lo más barato posible); 2) buscar <strong>la mejor</strong> forma posible de asignar agencias a un recorrido dado.</p>
+
+<p>Observar que esto es una <em>heurística</em>, dado que la solución óptima al problema original no necesariamente se obtiene asignando agencias al recorrido de menor costo, y muchas veces utilizar un recorrido de mayor costo podría inducir mayores descuentos (dadas las condiciones de las agencias), y en consecuencia un menor costo total.</p>
+
+<h2 id="etapa-i-el-recorrido">Etapa I: el recorrido</h2>
+
+<p>Para conseguir un recorrido inicial (dejando de lado las agencias), en primer lugar pensé en usar <a href="https://en.wikipedia.org/wiki/Concorde_TSP_Solver">Concorde</a>. Este programa permite obtener el recorrido óptimo siempre y cuando la cantidad de ciudades sea <em>razonable</em>. No logré que Concorde funcione para las 41011 ciudades, y opté por utilizar la heurística <a href="https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic">Lin–Kernighan</a>, en particular la implementación que está <a href="http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm">acá</a>.</p>
+
+<p>El mejor recorrido que obtuve en esta etapa fue de <strong>7754930.68</strong> km.</p>
+
+<h2 id="etapa-ii-asignación">Etapa II: asignación</h2>
+<h3 id="modelado">Modelado</h3>
+
+<p>Si consideramos el recorrido de la etapa anterior y asignamos en todos los viajes la agencia D, tenemos un costo total de <strong>$65924.31</strong> que nos sirve como punto de partida.</p>
+
+<p>Ahora queremos obtener la <strong>mejor</strong> forma de asignar las agencias. Para esto construí un modelo con las variables <script type="math/tex">X_{a,e}</script> donde <script type="math/tex">a \in \{A,B,C,D\}</script> y <script type="math/tex">e</script> es un tramo del recorrido.</p>
+
+<p>Si definimos:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+X_{a,e} = \begin{cases} 1 & \mbox{si } a\mbox{ está asignada al tramo } e \\ 0 & \mbox{caso contrario} \end{cases} %]]></script>
+
+<p>es posible modelar la restricción <code class="highlighter-rouge">todo tramo debe tener asignada una agencia</code> como:</p>
+
+<script type="math/tex; mode=display">X_{A,e} + X_{B,e} + X_{C,e} + X_{D,e} = 1</script>
+
+<p>para cada tramo <script type="math/tex">e</script> en el recorrido.</p>
+
+<p>Es necesario además modelar la función de costo que queremos minimizar. <code class="highlighter-rouge">La agencia B aplica un descuento del 15% siempre que el tramo asignado tenga más de 200km</code>. Teniendo en cuenta esto, podemos modelar el descuento de la agencia B como:</p>
+
+<script type="math/tex; mode=display">\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e > 200) * 0.01</script>
+
+<p>donde <script type="math/tex">T</script> es el recorrido, y <script type="math/tex">w_e</script> es la distancia en kilómetros del tramo <script type="math/tex">e \in T</script>.</p>
+
+<p>Por otro lado, <code class="highlighter-rouge">la agencia C aplica un descuento del 20% siempre que el tramo anterior tenga asignada la agencia B</code>. Para modelar este descuento, una posibilidad es incorporar las siguientes variables:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+Y_{e_i,e_{i+1}} = \begin{cases} 1 & \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}} = 1 \\ 0 & \mbox{caso contrario} \end{cases} %]]></script>
+
+<p>para cada par de tramos <script type="math/tex">(e_i,e_{i+1})</script> consecutivos en el recorrido.</p>
+
+<p>La motivación de esta variable es poder saber cuándo hay una agencia B asignada antes que la agencia C, y así poder aplicar el descuento correspondiente. El descuento de la agencia C se modela entonces como:</p>
+
+<script type="math/tex; mode=display">\sum_{1\leq i \leq 41010} Y_{e_i,e_{i+1}} * w_{e_{i+1}} * 0.20 * 0.01</script>
+
+<p>Además es necesario establecer linealmente la relación entre las variables <script type="math/tex">Y_{e_i,e_{i+1}}</script>, <script type="math/tex">X_{B,e_i}</script> y <script type="math/tex">X_{C,e_{i+1}}</script> para que cumpla con la definición antes propuesta:</p>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1}} \leq X_{B,e_i}</script>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1}} \leq X_{C,e_{i+1}}</script>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1}} + 1 \geq X_{B,e_i} + X_{C,e_{i+1}}</script>
+
+<p>para cada <script type="math/tex">i</script> tal que <script type="math/tex">1\leq i \leq 41010</script>.</p>
+
+<p>Para modelar el descuento de viajero frecuente, donde <code class="highlighter-rouge">la agencia A aplica un descuento del 35% cada vez que la agencia se utiliza por tercera vez consecutiva</code>, usamos una idea parecida. Incorporamos la variable:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,e_{i+1}} = 1 \wedge X_{A,e_{i+2}} = 1 \\ 0 & \mbox{caso contrario} \end{cases} %]]></script>
+
+<p>para cada <script type="math/tex">i</script> tal que <script type="math/tex">1\leq i \leq 41009</script>.</p>
+
+<p>La motivación es saber que hay 3 asignaciones consecutivas de la agencia A y que entonces vale aplicar el descuento. La sutileza en este caso está en que si se tiene por ejemplo, 8 veces consecutivas la agencia A, el descuento aplica solo en el costo de la tercera y sexta vez, como aclara el <a href="https://almundo.com.ar/eci/faq">FAQ</a>. Por esta razón, vamos a pedir lo siguiente:</p>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1},e_{i+2}} + Y_{e_{i+1},e_{i+2},e_{i+3}} + Y_{e_{i+2},e_{i+3},e_{i+4}} \leq 1</script>
+
+<p>para cada <script type="math/tex">i</script> tal que <script type="math/tex">1\leq i \leq 41007</script>.</p>
+
+<p>Y también una versión adaptada de las restricciones anteriores:</p>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_i}</script>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_{i+1}}</script>
+
+<script type="math/tex; mode=display">Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_{i+2}}</script>
+
+<script type="math/tex; mode=display">Y_{e_{i-2},e_{i-1},e_i} + Y_{e_{i-1},e_i,e_{i+1}} + Y_{e_i,e_{i+1},e_{i+2}} + 2 \geq X_{A,e_i} + X_{A,e_{i+1}} + X_{A,e_{i+2}}</script>
+
+<p>con el ajuste correspondiente en los primeros 2 tramos del recorrido, según si hace falta <script type="math/tex">Y_{e_{i-2},e_{i-1},e_i}</script> y/o <script type="math/tex">Y_{e_{i-1},e_i,e_{i+1}}</script>.</p>
+
+<p>Podemos entonces modelar el descuento como:</p>
+
+<script type="math/tex; mode=display">\sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01</script>
+
+<p>El último detalle es sobre el descuento por acumular kilómetros, donde <code class="highlighter-rouge">la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia</code>. Definimos:</p>
+
+<script type="math/tex; mode=display">Y_D = \left\lfloor \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \right\rfloor</script>
+
+<p>como la cantidad de veces que descontamos $15. Para linearizar <script type="math/tex">Y_D</script> agregamos las siguientes restricciones:</p>
+
+<script type="math/tex; mode=display">\frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \leq Y_D + (1-\epsilon)</script>
+
+<script type="math/tex; mode=display">Y_D \leq \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e</script>
+
+<p>y modelamos el descuento simplemente como:</p>
+
+<script type="math/tex; mode=display">Y_D * 15</script>
+
+<h3 id="cómputo">Cómputo</h3>
+
+<p>Para resolver el modelo existen muchas alternativas, cada una con diferentes ventajas/desventajas. Durante la competencia consideré:</p>
+
+<ul>
+  <li><a href="https://pypi.python.org/pypi/PuLP">PuLP</a>, una librería de Python que permite escribir el modelo y llamar a solvers de propósito general.</li>
+  <li><a href="https://en.wikipedia.org/wiki/CPLEX">CPLEX</a>, de lo mejor (si no es el mejor) de los solvers de propósito general.</li>
+</ul>
+
+<p>Utilicé PuLP para programar rápido el modelo y CPLEX para resolverlo.</p>
+
+<p>La asignación óptima sobre el recorrido mencionado anteriormente tiene un costo de <strong>$63828.5</strong> (es decir que mejoramos la solución en $2095.81).</p>
+
+<h1 id="algunas-observaciones">Algunas observaciones</h1>
+
+<p>La mejor solución final la conseguí incorporando un poco de búsqueda local sobre la solución anterior para tratar de refinarla. Logré bajar a <strong>$63815.82</strong> únicamente intercambiando el orden de ciudades consecutivas.</p>
+
+<p>Una observación interesante es que es posible modelar el problema original (<strong>completo</strong>) utilizando programación lineal entera. Faltando unas horas para que termine la competencia, un amigo que estaba jugando (<em>fedepousa</em>) me pasó el modelo que había armado dado que él se estaba yendo de vacaciones y no podía dedicarle más tiempo. Su modelo es exacto para el problema completo, pero es impensable correrlo sobre toda la instancia. Tomé su modelo y lo incorporé como un operador de búsqueda local más, aplicándolo en <em>chunks</em> de mi mejor recorrido. Es un operador costoso en términos de tiempo, y aplicándolo en sub-recorridos de 20 ciudades, cada 20 ciudades, tardaba un poco menos de 2hs. Si bien se está resolviendo el <strong>óptimo</strong> en cada <em>chunk</em>, se corre el riesgo de empeorar la solución total dado que el operador no tiene visibilidad global del recorrido. Una combinación final de este operador, los intercambios, y nuevamente la asignación óptima que presenté antes, fue la que me dejó en el cuarto puesto con un recorrido de <strong>$63801.03</strong>.</p>
+
+<p>Si bien el tiempo que pude dedicar durante los días de la competencia fue acotado, creo que sería valioso experimentar con más operadores de búsqueda local (y en particular con el modelo exacto para todo el problema).</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            
+            <a href="/tag/#/tsp" rel="tag"># tsp</a>
+          
+            
+            <a href="/tag/#/integer-programming" rel="tag"># integer-programming</a>
+          
+            
+            <a href="/tag/#/challenge" rel="tag"># challenge</a>
+          
+        </div>
+      
+
+      
+      
+      
+      
+      
+
+      
+      
+      
+
+      
+    </footer>
+  </article>
+
+  <div class="post-spread">
+    
+  </div>
+</div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        
+        
+        
+
+
+
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/assets/images/avatar.gif"
+               alt="Agus Montero" />
+          <p class="site-author-name" itemprop="name">Agus Montero</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+        
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+
+
+
+
+            
+              <div class="post-toc-content">
+    <ol class=nav>
+      <li class="nav-item nav-level-1"> <a class="nav-link" href="#el-problema"> <span class="nav-number">1</span> <span class="nav-text">El Problema</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#solución-propuesta"> <span class="nav-number">2</span> <span class="nav-text">Solución propuesta</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-2"> <a class="nav-link" href="#etapa-i-el-recorrido"> <span class="nav-number">2.1</span> <span class="nav-text">Etapa I: el recorrido</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#etapa-ii-asignación"> <span class="nav-number">2.2</span> <span class="nav-text">Etapa II: asignación</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#modelado"> <span class="nav-number">2.2.1</span> <span class="nav-text">Modelado</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cómputo"> <span class="nav-number">2.2.2</span> <span class="nav-text">Cómputo</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#algunas-observaciones"> <span class="nav-number">3</span> <span class="nav-text">Algunas observaciones</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
+    </ol>
+  </div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-rocket"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Agus Montero</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://jekyllrb.com">Jekyll</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/simpleyyt/jekyll-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+   
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  
+  
+  
+  
+  <script type="text/javascript" src="/assets/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/assets/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/assets/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/assets/js/src/post-details.js?v=5.1.1"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/assets/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+    
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
+
+
+<script type="text/javascript"
+    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>

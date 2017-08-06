@@ -1,1 +1,143 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-05T15:44:44-03:00</updated><id>http://localhost:4000/</id><title type="html">Welcome!</title><author><name>Agus Montero</name></author></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-05T23:15:19-03:00</updated><id>http://localhost:4000/</id><title type="html">Welcome!</title><author><name>Agus Montero</name></author><entry><title type="html">AlMundo Challenge - ECI 2017</title><link href="http://localhost:4000/challenge/2017/08/05/almundo-challenge/" rel="alternate" type="text/html" title="AlMundo Challenge - ECI 2017" /><published>2017-08-05T00:00:00-03:00</published><updated>2017-08-05T00:00:00-03:00</updated><id>http://localhost:4000/challenge/2017/08/05/almundo-challenge</id><content type="html" xml:base="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">&lt;p&gt;La semana pasada participé en la competencia &lt;a href=&quot;https://almundo.com.ar/eci/contest&quot;&gt;AlMundo Challenge&lt;/a&gt;
+organizada por &lt;a href=&quot;https://almundo.com.ar/&quot;&gt;almundo.com&lt;/a&gt; en el contexto de la &lt;a href=&quot;https://www.dc.uba.ar/events/eci/2017&quot;&gt;ECI2017&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;El problema me pareció interesante, y si bien el modelo con el que trabajé quedó en 4to puesto &lt;a href=&quot;https://almundo.com.ar/eci/ranking&quot;&gt;(ranking)&lt;/a&gt;, me gustaría compartirlo como un ejemplo de aplicación de programación lineal entera.&lt;/p&gt;
+
+&lt;!--
+One of the rewards of switching my website to [Jekyll](http://jekyllrb.com/) is the
+ability to support **MathJax**, which means I can write LaTeX-like equations that get
+nicely displayed in a web browser, like this one \\( \sqrt{\frac{n!}{k!(n-k)!}} \\) or
+this one \\( x^2 + y^2 = r^2 \\). --&gt;
+
+&lt;h1 id=&quot;el-problema&quot;&gt;El Problema&lt;/h1&gt;
+
+&lt;p&gt;La descripción completa del problema está &lt;a href=&quot;https://almundo.com.ar/eci/contest&quot;&gt;acá&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;En resumen, se tienen las coordenadas de 41011 ciudades, y un turista que debe volar a &lt;strong&gt;todas&lt;/strong&gt; las ciudades, visitando cada una de ellas &lt;strong&gt;exactamente una vez&lt;/strong&gt;. Además, en cada vuelo debe decidir qué agencia de viajes usar. Existen 4 agencias de viaje, y cada una ofrece descuentos si se cumplen determinadas condiciones. Por ejemplo, una de las agencias otorga un 35% de descuento en caso de volar con ella 3 veces consecutivas.&lt;/p&gt;
+
+&lt;p&gt;El objetivo del problema es decidir &lt;em&gt;en qué orden&lt;/em&gt; se deben visitar las ciudades y &lt;em&gt;con qué agencia&lt;/em&gt; en cada vuelo, buscando minimizar el costo total, teniendo en cuenta que todas las agencias tienen la misma tarifa: $0.01 por Km.&lt;/p&gt;
+
+&lt;p&gt;Una parte de este problema (&lt;em&gt;en qué orden&lt;/em&gt;) está relacionada con otro problema muy famoso: &lt;a href=&quot;https://es.wikipedia.org/wiki/Problema_del_viajante&quot;&gt;El problema del viajante de comercio&lt;/a&gt;, muy estudiado y para el cual existe &lt;a href=&quot;http://www.math.uwaterloo.ca/tsp/index.html&quot;&gt;mucha literatura&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&quot;solución-propuesta&quot;&gt;Solución propuesta&lt;/h1&gt;
+
+&lt;p&gt;Una de mis herramientas favoritas para atacar problemas de optimización es la &lt;a href=&quot;https://en.wikipedia.org/wiki/Integer_programming&quot;&gt;&lt;strong&gt;programación lineal entera&lt;/strong&gt;&lt;/a&gt;. Sin entrar en muchos detalles, la idea es construir un modelo matemático que describa las condiciones impuestas por el problema y la función objetivo que se quiere minimizar. Como su nombre lo indica, es importante que las relaciones entre las variables del modelo sean &lt;strong&gt;lineales&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Decidí partir el problema original en dos partes: 1) obtener un recorrido inicial sin tener en cuenta las agencias, y en consecuencia sin descuentos (el recorrido debe visitar todas las ciudades exactamente una vez y sea lo más barato posible); 2) buscar &lt;strong&gt;la mejor&lt;/strong&gt; forma posible de asignar agencias a un recorrido dado.&lt;/p&gt;
+
+&lt;p&gt;Observar que esto es una &lt;em&gt;heurística&lt;/em&gt;, dado que la solución óptima al problema original no necesariamente se obtiene asignando agencias al recorrido de menor costo, y muchas veces utilizar un recorrido de mayor costo podría inducir mayores descuentos (dadas las condiciones de las agencias), y en consecuencia un menor costo total.&lt;/p&gt;
+
+&lt;h2 id=&quot;etapa-i-el-recorrido&quot;&gt;Etapa I: el recorrido&lt;/h2&gt;
+
+&lt;p&gt;Para conseguir un recorrido inicial (dejando de lado las agencias), en primer lugar pensé en usar &lt;a href=&quot;https://en.wikipedia.org/wiki/Concorde_TSP_Solver&quot;&gt;Concorde&lt;/a&gt;. Este programa permite obtener el recorrido óptimo siempre y cuando la cantidad de ciudades sea &lt;em&gt;razonable&lt;/em&gt;. No logré que Concorde funcione para las 41011 ciudades, y opté por utilizar la heurística &lt;a href=&quot;https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic&quot;&gt;Lin–Kernighan&lt;/a&gt;, en particular la implementación que está &lt;a href=&quot;http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm&quot;&gt;acá&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;El mejor recorrido que obtuve en esta etapa fue de &lt;strong&gt;7754930.68&lt;/strong&gt; km.&lt;/p&gt;
+
+&lt;h2 id=&quot;etapa-ii-asignación&quot;&gt;Etapa II: asignación&lt;/h2&gt;
+&lt;h3 id=&quot;modelado&quot;&gt;Modelado&lt;/h3&gt;
+
+&lt;p&gt;Si consideramos el recorrido de la etapa anterior y asignamos en todos los viajes la agencia D, tenemos un costo total de &lt;strong&gt;$65924.31&lt;/strong&gt; que nos sirve como punto de partida.&lt;/p&gt;
+
+&lt;p&gt;Ahora queremos obtener la &lt;strong&gt;mejor&lt;/strong&gt; forma de asignar las agencias. Para esto construí un modelo con las variables &lt;script type=&quot;math/tex&quot;&gt;X_{a,e}&lt;/script&gt; donde &lt;script type=&quot;math/tex&quot;&gt;a \in \{A,B,C,D\}&lt;/script&gt; y &lt;script type=&quot;math/tex&quot;&gt;e&lt;/script&gt; es un tramo del recorrido.&lt;/p&gt;
+
+&lt;p&gt;Si definimos:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+X_{a,e} = \begin{cases} 1 &amp; \mbox{si } a\mbox{ está asignada al tramo } e \\ 0 &amp; \mbox{caso contrario} \end{cases} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;es posible modelar la restricción &lt;code class=&quot;highlighter-rouge&quot;&gt;todo tramo debe tener asignada una agencia&lt;/code&gt; como:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;X_{A,e} + X_{B,e} + X_{C,e} + X_{D,e} = 1&lt;/script&gt;
+
+&lt;p&gt;para cada tramo &lt;script type=&quot;math/tex&quot;&gt;e&lt;/script&gt; en el recorrido.&lt;/p&gt;
+
+&lt;p&gt;Es necesario además modelar la función de costo que queremos minimizar. &lt;code class=&quot;highlighter-rouge&quot;&gt;La agencia B aplica un descuento del 15% siempre que el tramo asignado tenga más de 200km&lt;/code&gt;. Teniendo en cuenta esto, podemos modelar el descuento de la agencia B como:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e &gt; 200) * 0.01&lt;/script&gt;
+
+&lt;p&gt;donde &lt;script type=&quot;math/tex&quot;&gt;T&lt;/script&gt; es el recorrido, y &lt;script type=&quot;math/tex&quot;&gt;w_e&lt;/script&gt; es la distancia en kilómetros del tramo &lt;script type=&quot;math/tex&quot;&gt;e \in T&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Por otro lado, &lt;code class=&quot;highlighter-rouge&quot;&gt;la agencia C aplica un descuento del 20% siempre que el tramo anterior tenga asignada la agencia B&lt;/code&gt;. Para modelar este descuento, una posibilidad es incorporar las siguientes variables:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+Y_{e_i,e_{i+1}} = \begin{cases} 1 &amp; \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}} = 1 \\ 0 &amp; \mbox{caso contrario} \end{cases} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;para cada par de tramos &lt;script type=&quot;math/tex&quot;&gt;(e_i,e_{i+1})&lt;/script&gt; consecutivos en el recorrido.&lt;/p&gt;
+
+&lt;p&gt;La motivación de esta variable es poder saber cuándo hay una agencia B asignada antes que la agencia C, y así poder aplicar el descuento correspondiente. El descuento de la agencia C se modela entonces como:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{1\leq i \leq 41010} Y_{e_i,e_{i+1}} * w_{e_{i+1}} * 0.20 * 0.01&lt;/script&gt;
+
+&lt;p&gt;Además es necesario establecer linealmente la relación entre las variables &lt;script type=&quot;math/tex&quot;&gt;Y_{e_i,e_{i+1}}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;X_{B,e_i}&lt;/script&gt; y &lt;script type=&quot;math/tex&quot;&gt;X_{C,e_{i+1}}&lt;/script&gt; para que cumpla con la definición antes propuesta:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1}} \leq X_{B,e_i}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1}} \leq X_{C,e_{i+1}}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1}} + 1 \geq X_{B,e_i} + X_{C,e_{i+1}}&lt;/script&gt;
+
+&lt;p&gt;para cada &lt;script type=&quot;math/tex&quot;&gt;i&lt;/script&gt; tal que &lt;script type=&quot;math/tex&quot;&gt;1\leq i \leq 41010&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Para modelar el descuento de viajero frecuente, donde &lt;code class=&quot;highlighter-rouge&quot;&gt;la agencia A aplica un descuento del 35% cada vez que la agencia se utiliza por tercera vez consecutiva&lt;/code&gt;, usamos una idea parecida. Incorporamos la variable:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 &amp; \mbox{si } X_{A,e_i} = 1 \wedge X_{A,e_{i+1}} = 1 \wedge X_{A,e_{i+2}} = 1 \\ 0 &amp; \mbox{caso contrario} \end{cases} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;para cada &lt;script type=&quot;math/tex&quot;&gt;i&lt;/script&gt; tal que &lt;script type=&quot;math/tex&quot;&gt;1\leq i \leq 41009&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;La motivación es saber que hay 3 asignaciones consecutivas de la agencia A y que entonces vale aplicar el descuento. La sutileza en este caso está en que si se tiene por ejemplo, 8 veces consecutivas la agencia A, el descuento aplica solo en el costo de la tercera y sexta vez, como aclara el &lt;a href=&quot;https://almundo.com.ar/eci/faq&quot;&gt;FAQ&lt;/a&gt;. Por esta razón, vamos a pedir lo siguiente:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1},e_{i+2}} + Y_{e_{i+1},e_{i+2},e_{i+3}} + Y_{e_{i+2},e_{i+3},e_{i+4}} \leq 1&lt;/script&gt;
+
+&lt;p&gt;para cada &lt;script type=&quot;math/tex&quot;&gt;i&lt;/script&gt; tal que &lt;script type=&quot;math/tex&quot;&gt;1\leq i \leq 41007&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Y también una versión adaptada de las restricciones anteriores:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_i}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_{i+1}}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_{i+2}}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_{e_{i-2},e_{i-1},e_i} + Y_{e_{i-1},e_i,e_{i+1}} + Y_{e_i,e_{i+1},e_{i+2}} + 2 \geq X_{A,e_i} + X_{A,e_{i+1}} + X_{A,e_{i+2}}&lt;/script&gt;
+
+&lt;p&gt;con el ajuste correspondiente en los primeros 2 tramos del recorrido, según si hace falta &lt;script type=&quot;math/tex&quot;&gt;Y_{e_{i-2},e_{i-1},e_i}&lt;/script&gt; y/o &lt;script type=&quot;math/tex&quot;&gt;Y_{e_{i-1},e_i,e_{i+1}}&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;Podemos entonces modelar el descuento como:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01&lt;/script&gt;
+
+&lt;p&gt;El último detalle es sobre el descuento por acumular kilómetros, donde &lt;code class=&quot;highlighter-rouge&quot;&gt;la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia&lt;/code&gt;. Definimos:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_D = \left\lfloor \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \right\rfloor&lt;/script&gt;
+
+&lt;p&gt;como la cantidad de veces que descontamos $15. Para linearizar &lt;script type=&quot;math/tex&quot;&gt;Y_D&lt;/script&gt; agregamos las siguientes restricciones:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \leq Y_D + (1-\epsilon)&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_D \leq \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e&lt;/script&gt;
+
+&lt;p&gt;y modelamos el descuento simplemente como:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_D * 15&lt;/script&gt;
+
+&lt;h3 id=&quot;cómputo&quot;&gt;Cómputo&lt;/h3&gt;
+
+&lt;p&gt;Para resolver el modelo existen muchas alternativas, cada una con diferentes ventajas/desventajas. Durante la competencia consideré:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://pypi.python.org/pypi/PuLP&quot;&gt;PuLP&lt;/a&gt;, una librería de Python que permite escribir el modelo y llamar a solvers de propósito general.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/CPLEX&quot;&gt;CPLEX&lt;/a&gt;, de lo mejor (si no es el mejor) de los solvers de propósito general.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Utilicé PuLP para programar rápido el modelo y CPLEX para resolverlo.&lt;/p&gt;
+
+&lt;p&gt;La asignación óptima sobre el recorrido mencionado anteriormente tiene un costo de &lt;strong&gt;$63828.5&lt;/strong&gt; (es decir que mejoramos la solución en $2095.81).&lt;/p&gt;
+
+&lt;h1 id=&quot;algunas-observaciones&quot;&gt;Algunas observaciones&lt;/h1&gt;
+
+&lt;p&gt;La mejor solución final la conseguí incorporando un poco de búsqueda local sobre la solución anterior para tratar de refinarla. Logré bajar a &lt;strong&gt;$63815.82&lt;/strong&gt; únicamente intercambiando el orden de ciudades consecutivas.&lt;/p&gt;
+
+&lt;p&gt;Una observación interesante es que es posible modelar el problema original (&lt;strong&gt;completo&lt;/strong&gt;) utilizando programación lineal entera. Faltando unas horas para que termine la competencia, un amigo que estaba jugando (&lt;em&gt;fedepousa&lt;/em&gt;) me pasó el modelo que había armado dado que él se estaba yendo de vacaciones y no podía dedicarle más tiempo. Su modelo es exacto para el problema completo, pero es impensable correrlo sobre toda la instancia. Tomé su modelo y lo incorporé como un operador de búsqueda local más, aplicándolo en &lt;em&gt;chunks&lt;/em&gt; de mi mejor recorrido. Es un operador costoso en términos de tiempo, y aplicándolo en sub-recorridos de 20 ciudades, cada 20 ciudades, tardaba un poco menos de 2hs. Si bien se está resolviendo el &lt;strong&gt;óptimo&lt;/strong&gt; en cada &lt;em&gt;chunk&lt;/em&gt;, se corre el riesgo de empeorar la solución total dado que el operador no tiene visibilidad global del recorrido. Una combinación final de este operador, los intercambios, y nuevamente la asignación óptima que presenté antes, fue la que me dejó en el cuarto puesto con un recorrido de &lt;strong&gt;$63801.03&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Si bien el tiempo que pude dedicar durante los días de la competencia fue acotado, creo que sería valioso experimentar con más operadores de búsqueda local (y en particular con el modelo exacto para todo el problema).&lt;/p&gt;</content><author><name>Agus Montero</name></author><category term="tsp" /><category term="integer-programming" /><category term="challenge" /><summary type="html">La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.</summary></entry></feed>
