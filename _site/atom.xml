@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-05T23:44:24-03:00</updated><id>http://localhost:4000/</id><title type="html">Welcome!</title><author><name>Agus Montero</name></author><entry><title type="html">AlMundo Challenge - ECI 2017</title><link href="http://localhost:4000/challenge/2017/08/05/almundo-challenge/" rel="alternate" type="text/html" title="AlMundo Challenge - ECI 2017" /><published>2017-08-05T00:00:00-03:00</published><updated>2017-08-05T00:00:00-03:00</updated><id>http://localhost:4000/challenge/2017/08/05/almundo-challenge</id><content type="html" xml:base="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">&lt;p&gt;La semana pasada participé en la competencia &lt;a href=&quot;https://almundo.com.ar/eci/contest&quot;&gt;AlMundo Challenge&lt;/a&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-06T07:26:28-03:00</updated><id>http://localhost:4000/</id><title type="html">Welcome!</title><author><name>Agus Montero</name></author><entry><title type="html">AlMundo Challenge - ECI 2017</title><link href="http://localhost:4000/challenge/2017/08/05/almundo-challenge/" rel="alternate" type="text/html" title="AlMundo Challenge - ECI 2017" /><published>2017-08-05T00:00:00-03:00</published><updated>2017-08-05T00:00:00-03:00</updated><id>http://localhost:4000/challenge/2017/08/05/almundo-challenge</id><content type="html" xml:base="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">&lt;p&gt;La semana pasada participé en la competencia &lt;a href=&quot;https://almundo.com.ar/eci/contest&quot;&gt;AlMundo Challenge&lt;/a&gt;
 organizada por &lt;a href=&quot;https://almundo.com.ar/&quot;&gt;almundo.com&lt;/a&gt; en el contexto de la &lt;a href=&quot;https://www.dc.uba.ar/events/eci/2017&quot;&gt;ECI2017&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;El problema me pareció interesante, y si bien el modelo con el que trabajé quedó en 4to puesto &lt;a href=&quot;https://almundo.com.ar/eci/ranking&quot;&gt;(ranking)&lt;/a&gt;, me gustaría compartirlo como un ejemplo de aplicación de programación lineal entera.&lt;/p&gt;
@@ -107,7 +107,7 @@ Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 &amp; \mbox{si } X_{A,e_i} = 1 \wedge X
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01&lt;/script&gt;
 
-&lt;p&gt;El último detalle es sobre el descuento por acumular kilómetros, donde &lt;code class=&quot;highlighter-rouge&quot;&gt;la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia&lt;/code&gt;. Definimos:&lt;/p&gt;
+&lt;p&gt;El último detalle es sobre el descuento por acumular kilómetros, donde &lt;code class=&quot;highlighter-rouge&quot;&gt;la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia&lt;/code&gt;. Definimos &lt;script type=&quot;math/tex&quot;&gt;Y_D \in \mathbb{Z}_{\geq 0}&lt;/script&gt; como:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_D = \left\lfloor \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \right\rfloor&lt;/script&gt;
 
@@ -120,6 +120,24 @@ Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 &amp; \mbox{si } X_{A,e_i} = 1 \wedge X
 &lt;p&gt;y modelamos el descuento simplemente como:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;Y_D * 15&lt;/script&gt;
+
+&lt;p&gt;Algo interesante es que como la función objetivo busca maximizar el descuento, la primera restricción sobre &lt;script type=&quot;math/tex&quot;&gt;Y_D&lt;/script&gt; no será necesaria y la solución óptima será tal que se cumpla dicha restricción.&lt;/p&gt;
+
+&lt;p&gt;Finalmente, la función objetivo a maximizar es:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;descuento =&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e &gt; 200) * 0.01&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;+ \sum_{1\leq i \leq 41010} Y_{e_i,e_{i+1}} * w_{e_{i+1}} * 0.20 * 0.01&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;+ \sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;+ Y_D * 15&lt;/script&gt;
+
+&lt;p&gt;o de manera equivalente, queremos minimizar:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\sum_{e\in T} w_e * 0.01 - descuento&lt;/script&gt;
 
 &lt;h3 id=&quot;cómputo&quot;&gt;Cómputo&lt;/h3&gt;
 

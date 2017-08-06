@@ -113,7 +113,7 @@ Podemos entonces modelar el descuento como:
 
 $$ \sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01 $$
 
-El último detalle es sobre el descuento por acumular kilómetros, donde ```la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia```. Definimos:
+El último detalle es sobre el descuento por acumular kilómetros, donde ```la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia```. Definimos $$Y_D \in \mathbb{Z}_{\geq 0}$$ como:
 
 $$Y_D = \left\lfloor \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \right\rfloor$$
 
@@ -126,6 +126,24 @@ $$Y_D \leq \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e$$
 y modelamos el descuento simplemente como:
 
 $$Y_D * 15$$
+
+Algo interesante es que como la función objetivo busca maximizar el descuento, la primera restricción sobre $$Y_D$$ no será necesaria y la solución óptima será tal que se cumpla dicha restricción.
+
+Finalmente, la función objetivo a maximizar es:
+
+$$descuento =$$
+
+$$\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e > 200) * 0.01$$
+
+$$+ \sum_{1\leq i \leq 41010} Y_{e_i,e_{i+1}} * w_{e_{i+1}} * 0.20 * 0.01$$
+
+$$+ \sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01$$
+
+$$+ Y_D * 15$$
+
+o de manera equivalente, queremos minimizar:
+
+$$\sum_{e\in T} w_e * 0.01 - descuento$$
 
 ### Cómputo
 
