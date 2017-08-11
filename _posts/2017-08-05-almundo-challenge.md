@@ -7,75 +7,70 @@ tags: [tsp, integer-programming, challenge]
 image:
 ---
 
-La semana pasada participé en la competencia [AlMundo Challenge](https://almundo.com.ar/eci/contest)
-organizada por [almundo.com](https://almundo.com.ar/) en el contexto de la [ECI2017](https://www.dc.uba.ar/events/eci/2017).
+Last week I participated in the competition [AlMundo Challenge](https://almundo.com.ar/eci/contest)
+organized by [almundo.com](https://almundo.com.ar/) in the context of [ECI2017](https://www.dc.uba.ar/events/eci/2017).
 
-El problema me pareció interesante, y si bien el modelo con el que trabajé quedó en 4to puesto [(ranking)](https://almundo.com.ar/eci/ranking), me gustaría compartirlo como un ejemplo de aplicación de programación lineal entera.
+I found the problem interesting, and although the model I worked with was in 4th place [(ranking)](https://almundo.com.ar/eci/ranking), I would like to share it as an example of an integer programming application.
 
-<!--
-One of the rewards of switching my website to [Jekyll](http://jekyllrb.com/) is the
-ability to support **MathJax**, which means I can write LaTeX-like equations that get
-nicely displayed in a web browser, like this one \\( \sqrt{\frac{n!}{k!(n-k)!}} \\) or
-this one \\( x^2 + y^2 = r^2 \\). -->
 
-# El Problema
+# Problem
 
-La descripción completa del problema está [acá](https://almundo.com.ar/eci/contest).
+The complete description of the problem is [here](https://almundo.com.ar/eci/contest).
 
-En resumen, se tienen las coordenadas de 41011 ciudades, y un turista que debe volar a **todas** las ciudades, visitando cada una de ellas **exactamente una vez**. Además, en cada vuelo debe decidir qué agencia de viajes usar. Existen 4 agencias de viaje, y cada una ofrece descuentos si se cumplen determinadas condiciones. Por ejemplo, una de las agencias otorga un 35% de descuento en caso de volar con ella 3 veces consecutivas.
+To sum up, you have the location of 41011 cities, and a tourist who must fly to **all** cities, visiting each of them **exactly once**. In addition, in each flight he must decide which travel agency to use. There are 4 travel agencies, and each offers discounts if certain conditions are met. For example, one of the agencies grants a 35% discount in case of flying with it for 3 consecutive times.
 
-El objetivo del problema es decidir *en qué orden* se deben visitar las ciudades y *con qué agencia* en cada vuelo, buscando minimizar el costo total, teniendo en cuenta que todas las agencias tienen la misma tarifa: $0.01 por Km.
+The objective of the problem is to decide *in which order* cities should be visited and *which agency to use* in each flight, seeking to minimize the total cost, taking into account that all agencies have the same rate: $0.01 per Km.
 
-Una parte de este problema (*en qué orden*) está relacionada con otro problema muy famoso: [El problema del viajante de comercio](https://es.wikipedia.org/wiki/Problema_del_viajante), muy estudiado y para el cual existe [mucha literatura](http://www.math.uwaterloo.ca/tsp/index.html).
+A part of this problem (*in which order*) is related to another very famous problem: [The traveling salesman problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem), which is very studied and for which there is [much literature](http://www.math.uwaterloo.ca/tsp/index.html).
 
-# Solución propuesta
+# My approach
 
-Una de mis herramientas favoritas para atacar problemas de optimización es la [**programación lineal entera**](https://en.wikipedia.org/wiki/Integer_programming). Sin entrar en muchos detalles, la idea es construir un modelo matemático que describa las condiciones impuestas por el problema y la función objetivo que se quiere minimizar. Como su nombre lo indica, es importante que las relaciones entre las variables del modelo sean **lineales**.
+One of my favorite tools for tackling optimization problems is the [**integer programming**](https://en.wikipedia.org/wiki/Integer_programming). To be simple, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are **linear**.
 
-Decidí partir el problema original en dos partes: 1) obtener un recorrido inicial sin tener en cuenta las agencias, y en consecuencia sin descuentos (el recorrido debe visitar todas las ciudades exactamente una vez y sea lo más barato posible); 2) buscar **la mejor** forma posible de asignar agencias a un recorrido dado.
+I decided to split the original problem into two parts: 1) get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible); 2) look for **the best** possible way of assigning agencies to a given route.
 
-Observar que esto es una *heurística*, dado que la solución óptima al problema original no necesariamente se obtiene asignando agencias al recorrido de menor costo, y muchas veces utilizar un recorrido de mayor costo podría inducir mayores descuentos (dadas las condiciones de las agencias), y en consecuencia un menor costo total.
+Note that this is a *heuristic* since the optimal solution to the original problem is not necessarily obtained by assigning agencies to the shortest route, and often using a higher-cost route could induce greater discounts (given the conditions of the agencies), and consequently a lower total cost.
 
-## Etapa I: el recorrido
+## Stage I: the tour
 
-Para conseguir un recorrido inicial (dejando de lado las agencias), en primer lugar pensé en usar [Concorde](https://en.wikipedia.org/wiki/Concorde_TSP_Solver). Este programa permite obtener el recorrido óptimo siempre y cuando la cantidad de ciudades sea *razonable*. No logré que Concorde funcione para las 41011 ciudades, y opté por utilizar la heurística [Lin–Kernighan](https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic), en particular la implementación que está [acá](http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm).
+To get an initial tour (leaving aside the agencies), first I thought about using [Concorde](https://en.wikipedia.org/wiki/Concorde_TSP_Solver). This program allows you to get the optimal route as long as the number of cities is *reasonable*. I could not make Concorde work for 41011 cities, so I tried with the well-known [Lin-Kernighan heuristic](https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic), and in particular the implementation that is [here](http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm).
 
-El mejor recorrido que obtuve en esta etapa fue de **7754930.68** km.
+The best route I got at this stage was **7754930.68** km.
 
-## Etapa II: asignación
-### Modelado
+## Stage II: assigment
+### Model
 
-Si consideramos el recorrido de la etapa anterior y asignamos en todos los viajes la agencia D, tenemos un costo total de **$65924.31** que nos sirve como punto de partida.
+If we consider the route of the previous stage and assign to all trips agency type D, we have a total cost of **$65924.31** that serves as a baseline.
 
-Ahora queremos obtener la **mejor** forma de asignar las agencias. Para esto construí un modelo con las variables $$X_{a,e}$$ donde $$a \in \{A,B,C,D\}$$ y $$e$$ es un tramo del recorrido.
+Now we want to get the **best** way to allocate agencies. For this purpose, I constructed a model with the variables $$ X_ {a, e} $$ where $$ a \in \{A, B, C, D \} $$ and $$ e $$ is an edge of the tour (the trip between two cities).
 
-Si definimos:
+If we define:
 
-$$X_{a,e} = \begin{cases} 1 & \mbox{si } a\mbox{ está asignada al tramo } e \\ 0 & \mbox{caso contrario} \end{cases}$$
+$$X_{a,e} = \begin{cases} 1 & \mbox{si } a\mbox{ is assigned to edge } e \\ 0 & \mbox{other case} \end{cases}$$
 
-es posible modelar la restricción ```todo tramo debe tener asignada una agencia``` como:
+it is possible to model the constraint ```every edge must have an agency assigned``` as:
 
 $$X_{A,e} + X_{B,e} + X_{C,e} + X_{D,e} = 1$$
 
-para cada tramo $$e$$ en el recorrido.
+for each edge $$ e $$ in the route.
 
-Es necesario además modelar la función de costo que queremos minimizar. ```La agencia B aplica un descuento del 15% siempre que el tramo asignado tenga más de 200km```. Teniendo en cuenta esto, podemos modelar el descuento de la agencia B como:
+It is also necessary to model the cost function that we want to minimize. ```Agency B applies a discount of 15% provided that the assigned edge is more than 200km long```. Taking this into account, we can model the discount of agency B as:
 
 $$ \sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e > 200) * 0.01 $$
 
-donde $$T$$ es el recorrido, y $$w_e$$ es la distancia en kilómetros del tramo $$e \in T$$.
+where $$ T $$ is the tour, and $$ w_e $$ is the distance in kilometers of the edge $$ e \in T $$.
 
-Por otro lado, ```la agencia C aplica un descuento del 20% siempre que el tramo anterior tenga asignada la agencia B```. Para modelar este descuento, una posibilidad es incorporar las siguientes variables:
+On the other hand, ```agency C applies a discount of 20% provided that the previous trip is assigned to agency B```. To model this discount, one possibility is to incorporate the following variables:
 
-$$Y_{e_i,e_{i+1}} = \begin{cases} 1 & \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}} = 1 \\ 0 & \mbox{caso contrario} \end{cases}$$
+$$Y_{e_i,e_{i+1}} = \begin{cases} 1 & \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}} = 1 \\ 0 & \mbox{other case} \end{cases}$$
 
-para cada par de tramos $$(e_i,e_{i+1})$$ consecutivos en el recorrido.
+for each pair of consecutive edges $$(e_i, e_{i + 1})$$ in the tour.
 
-La motivación de esta variable es poder saber cuándo hay una agencia B asignada antes que la agencia C, y así poder aplicar el descuento correspondiente. El descuento de la agencia C se modela entonces como:
+The motivation of this variable is to be able to know when there is an assigned agency B before agency C, and thus to be able to apply the corresponding discount. The discount of agency C is then modeled as:
 
 $$ \sum_{1\leq i \leq 41010} Y_{e_i,e_{i+1}} * w_{e_{i+1}} * 0.20 * 0.01 $$
 
-Además es necesario establecer linealmente la relación entre las variables $$Y_{e_i,e_{i+1}}$$, $$X_{B,e_i}$$ y $$X_{C,e_{i+1}}$$ para que cumpla con la definición antes propuesta:
+In addition, it is necessary to linearly establish the relationship between the variables $$Y_{e_i,e_{i+1}}$$, $$X_{B,e_i}$$ and $$X_{C,e_{i+1}}$$ to meet the definition above:
 
 $$Y_{e_i,e_{i+1}} \leq X_{B,e_i}$$
 
@@ -83,21 +78,21 @@ $$Y_{e_i,e_{i+1}} \leq X_{C,e_{i+1}}$$
 
 $$Y_{e_i,e_{i+1}} + 1 \geq X_{B,e_i} + X_{C,e_{i+1}}$$
 
-para cada $$i$$ tal que $$1\leq i \leq 41010$$.
+for each $$i$$ such that $$ 1 \leq i \leq 41010 $$.
 
-Para modelar el descuento de viajero frecuente, donde ```la agencia A aplica un descuento del 35% cada vez que la agencia se utiliza por tercera vez consecutiva```, usamos una idea parecida. Incorporamos la variable:
+To model the frequent flyer discount, where ```agency A applies a 35% discount every time the agency is used for the third consecutive time```, we use a similar idea. We add the variable:
 
-$$Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,e_{i+1}} = 1 \wedge X_{A,e_{i+2}} = 1 \\ 0 & \mbox{caso contrario} \end{cases}$$
+$$Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,e_{i+1}} = 1 \wedge X_{A,e_{i+2}} = 1 \\ 0 & \mbox{other case} \end{cases}$$
 
-para cada $$i$$ tal que $$1\leq i \leq 41009$$.
+for each $$ i $$ such that $$ 1 \leq i \leq 41009 $$.
 
-La motivación es saber que hay 3 asignaciones consecutivas de la agencia A y que entonces vale aplicar el descuento. La sutileza en este caso está en que si se tiene por ejemplo, 8 veces consecutivas la agencia A, el descuento aplica solo en el costo de la tercera y sexta vez, como aclara el [FAQ](https://almundo.com.ar/eci/faq). Por esta razón, vamos a pedir lo siguiente:
+The motivation is to know that there are 3 consecutive assignments of agency A and that it is worth applying the discount. The detail in this case is that if you have for example, 8 consecutive times agency A, the discount applies only in the cost of the third and sixth time, as clarified in the [FAQ](https://almundo.com.ar/eci/faq). For this reason, we also add the following constraint:
 
 $$Y_{e_i,e_{i+1},e_{i+2}} + Y_{e_{i+1},e_{i+2},e_{i+3}} + Y_{e_{i+2},e_{i+3},e_{i+4}} \leq 1$$
 
-para cada $$i$$ tal que $$1\leq i \leq 41007$$.
+for each $$ i $$ such that $$ 1 \leq i \leq 41007 $$.
 
-Y también una versión adaptada de las restricciones anteriores:
+And also an adapted version of the previous restrictions:
 
 $$Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_i}$$
 
@@ -107,31 +102,31 @@ $$Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_{i+2}}$$
 
 $$Y_{e_{i-2},e_{i-1},e_i} + Y_{e_{i-1},e_i,e_{i+1}} + Y_{e_i,e_{i+1},e_{i+2}} + 2 \geq X_{A,e_i} + X_{A,e_{i+1}} + X_{A,e_{i+2}}$$
 
-con el ajuste correspondiente en los primeros 2 tramos del recorrido, según si hace falta $$Y_{e_{i-2},e_{i-1},e_i}$$ y/o $$Y_{e_{i-1},e_i,e_{i+1}}$$.
+with the corresponding adjustment in the first 2 trips of the tour, where $$Y_{e_{i-2},e_{i-1},e_i}$$ and/or $$Y_{e_{i-1},e_i,e_{i+1}}$$ must not be added.
 
-Podemos entonces modelar el descuento como:
+We can then model the discount as:
 
 $$ \sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01 $$
 
-El último detalle es sobre el descuento por acumular kilómetros, donde ```la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia```. Definimos $$Y_D \in \mathbb{Z}_{\geq 0}$$ como:
+The last detail is about the discount of accumulating kilometers, where ```agency D returns a fixed amount of $15 per 10000km traveled with this agency```. We define $$Y_D \in \mathbb{Z}_{\geq 0}$$ as:
 
 $$Y_D = \left\lfloor \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \right\rfloor$$
 
-como la cantidad de veces que descontamos $15. Para linearizar $$Y_D$$ agregamos las siguientes restricciones:
+as the amount of times we discount $15. To linearize $$ Y_D $$ we add the following constraints:
 
 $$\frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \leq Y_D + (1-\epsilon)$$
 
 $$Y_D \leq \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e$$
 
-y modelamos el descuento simplemente como:
+and we model the discount simply as:
 
 $$Y_D * 15$$
 
-Algo interesante es que como la función objetivo busca maximizar el descuento, la primera restricción sobre $$Y_D$$ no será necesaria y la solución óptima será tal que se cumpla dicha restricción.
+Interestingly, since the objective function seeks to maximize the discount, the first restriction on $$ Y_D $$ will not be necessary and the optimal solution will be such that the restriction is met.
 
-Finalmente, la función objetivo a maximizar es:
+Finally, the objective function to be maximized is:
 
-$$descuento =$$
+$$discount =$$
 
 $$\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e > 200) * 0.01$$
 
@@ -141,34 +136,35 @@ $$+ \sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.0
 
 $$+ Y_D * 15$$
 
-o de manera equivalente, queremos minimizar:
+or equivalently, we want to minimize:
 
-$$\sum_{e\in T} w_e * 0.01 - descuento$$
+$$\sum_{e\in T} w_e * 0.01 - discount$$
 
-### Cómputo
+### Solving the model
 
-Para resolver el modelo existen muchas alternativas, cada una con diferentes ventajas/desventajas. Durante la competencia consideré:
+To solve the model there are many alternatives, each with different advantages and disadvantages. During the competition I considered:
 
-  * [PuLP](https://pypi.python.org/pypi/PuLP), una librería de Python que permite escribir el modelo y llamar a solvers de propósito general.
-  * [CPLEX](https://en.wikipedia.org/wiki/CPLEX), de lo mejor (si no es el mejor) de los solvers de propósito general.
+  * [PuLP](https://pypi.python.org/pypi/PuLP), a Python library that allows you to code the model and call general-purpose solvers.
 
-Utilicé PuLP para programar rápido el modelo y CPLEX para resolverlo.
+  * [CPLEX](https://en.wikipedia.org/wiki/CPLEX), one of the best (if not the best) general purpose solvers.
 
-La asignación óptima sobre el recorrido mencionado anteriormente tiene un costo de **$63828.5** (es decir que mejoramos la solución en $2095.81).
+I used PuLP to quickly code the model and CPLEX to solve it.
 
-# Algunas observaciones
+The optimal assignment over the aforementioned tour has a cost of **$63828.5** (that is, we improved the solution by $2095.81).
 
-La mejor solución final la conseguí incorporando un poco de búsqueda local sobre la solución anterior para tratar de refinarla. Logré bajar a **$63815.82** únicamente intercambiando el orden de ciudades consecutivas.
+# Notes
 
-Una observación interesante es que es posible modelar el problema original (**completo**) utilizando programación lineal entera. Faltando unas horas para que termine la competencia, un amigo que estaba jugando (*fedepousa*) me pasó el modelo que había armado dado que él se estaba yendo de vacaciones y no podía dedicarle más tiempo. Su modelo es exacto para el problema completo, pero es impensable correrlo sobre toda la instancia. Tomé su modelo y lo incorporé como un operador de búsqueda local más, aplicándolo en *chunks* de mi mejor recorrido. Es un operador costoso en términos de tiempo, y aplicándolo en sub-recorridos de 20 ciudades, cada 20 ciudades, tardaba un poco menos de 2hs. Si bien se está resolviendo el **óptimo** en cada *chunk*, se corre el riesgo de empeorar la solución total dado que el operador no tiene visibilidad global del recorrido. Una combinación final de este operador, los intercambios, y nuevamente la asignación óptima que presenté antes, fue la que me dejó en el cuarto puesto con un recorrido de **$63801.03**. Gracias *fedepousa*!
+I got my best final solution by incorporating a little local search on the previous solution trying to improve it. I managed to get down to **$63815.82** only by swapping the order of consecutive cities.
 
-El tiempo que pude dedicar durante los días de la competencia fue acotado y seguramente existan infinitas mejoras sobre el modelo propuesto. Creo también que sería valioso experimentar con más operadores de búsqueda local (y en particular con el modelo exacto para todo el problema).
+An interesting observation is that it is possible to model the original (**complete**) problem using integer programming. With only a few hours left to finish the competition, a friend who was playing (*fedepousa*) share me the model he had built since he was going on vacation and could not spend more time in the competition. This model was exact for the complete problem, but it is unthinkable to run it on the whole instance. I took his model and incorporated it as a local search operator, applying it in *chunks* of my best route. It is an expensive operator in terms of time, and applying it in sub-routes of 20 cities, every 20 cities, took a little less than 2 hours. Although the **optimum** in each chunk is being solved, there is a risk of deteriorating the total solution since the operator has no overall visibility of the route. A final combination of this operator, the simple swaps, and the optimal allocation that I presented before, was the one that left me in fourth place with a tour of **$63801.03**. Thanks *fedepousa*!
 
-# Bibliografía
-Si te gustó la forma de pensar el problema, o tenés curiosidad sobre programación lineal entera o el problema del viajante de comercio, te recomiendo:
+Finally, I would like to mention that the time that I could use during the few days of the competition was limited, and surely there are infinite improvements on the proposed model. I also think it would be valuable to experiment with more local search operators (and in particular with the exact model for the whole problem).
 
-* [Discrete-optimization](https://www.coursera.org/learn/discrete-optimization), un gran curso sobre Optimización Discreta en general (y programación entera en particular).
+# Literature
+If you liked the way I think about the problem, or feel curious about integer programming or the traveling salesman problem, I recommend:
+
+* [Discrete-optimization](https://www.coursera.org/learn/discrete-optimization), an excellent course on Discrete Optimization (and integer programming in particular).
 * Cook, W. (2012). In pursuit of the traveling salesman: mathematics at the limits of computation. Princeton University Press.
 * Applegate, D. L., Bixby, R. E., Chvatal, V., & Cook, W. J. (2011). The traveling salesman problem: a computational study. Princeton university press.
 * Wolsey, L. A. (1998). Integer programming. Wiley.
-* Williams, H. P. (2013). Model building in mathematical programming. John Wiley & Sons. (gracias Isa por compartirlo!)
+* Williams, H. P. (2013). Model building in mathematical programming. John Wiley & Sons. (thanks Isa for sharing!)

@@ -111,17 +111,17 @@
 
 
 
-<meta name="description" content="La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.">
+<meta name="description" content="Last week I participated in the competition AlMundo Challenge organized by almundo.com in the context of ECI2017.">
 <meta name="keywords" content="tsp, integer-programming, challenge">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AlMundo Challenge - ECI 2017">
 <meta property="og:url" content="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">
 <meta property="og:site_name" content="Welcome!">
-<meta property="og:description" content="La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.">
+<meta property="og:description" content="Last week I participated in the competition AlMundo Challenge organized by almundo.com in the context of ECI2017.">
 <meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AlMundo Challenge - ECI 2017">
-<meta name="twitter:description" content="La semana pasada participé en la competencia AlMundo Challenge organizada por almundo.com en el contexto de la ECI2017.">
+<meta name="twitter:description" content="Last week I participated in the competition AlMundo Challenge organized by almundo.com in the context of ECI2017.">
 
 
 <script type="text/javascript" id="hexo.configurations">
@@ -386,77 +386,71 @@
       
 
       
-        <p>La semana pasada participé en la competencia <a href="https://almundo.com.ar/eci/contest">AlMundo Challenge</a>
-organizada por <a href="https://almundo.com.ar/">almundo.com</a> en el contexto de la <a href="https://www.dc.uba.ar/events/eci/2017">ECI2017</a>.</p>
+        <p>Last week I participated in the competition <a href="https://almundo.com.ar/eci/contest">AlMundo Challenge</a>
+organized by <a href="https://almundo.com.ar/">almundo.com</a> in the context of <a href="https://www.dc.uba.ar/events/eci/2017">ECI2017</a>.</p>
 
-<p>El problema me pareció interesante, y si bien el modelo con el que trabajé quedó en 4to puesto <a href="https://almundo.com.ar/eci/ranking">(ranking)</a>, me gustaría compartirlo como un ejemplo de aplicación de programación lineal entera.</p>
+<p>I found the problem interesting, and although the model I worked with was in 4th place <a href="https://almundo.com.ar/eci/ranking">(ranking)</a>, I would like to share it as an example of an integer programming application.</p>
 
-<!--
-One of the rewards of switching my website to [Jekyll](http://jekyllrb.com/) is the
-ability to support **MathJax**, which means I can write LaTeX-like equations that get
-nicely displayed in a web browser, like this one \\( \sqrt{\frac{n!}{k!(n-k)!}} \\) or
-this one \\( x^2 + y^2 = r^2 \\). -->
+<h1 id="problem">Problem</h1>
 
-<h1 id="el-problema">El Problema</h1>
+<p>The complete description of the problem is <a href="https://almundo.com.ar/eci/contest">here</a>.</p>
 
-<p>La descripción completa del problema está <a href="https://almundo.com.ar/eci/contest">acá</a>.</p>
+<p>To sum up, you have the location of 41011 cities, and a tourist who must fly to <strong>all</strong> cities, visiting each of them <strong>exactly once</strong>. In addition, in each flight he must decide which travel agency to use. There are 4 travel agencies, and each offers discounts if certain conditions are met. For example, one of the agencies grants a 35% discount in case of flying with it for 3 consecutive times.</p>
 
-<p>En resumen, se tienen las coordenadas de 41011 ciudades, y un turista que debe volar a <strong>todas</strong> las ciudades, visitando cada una de ellas <strong>exactamente una vez</strong>. Además, en cada vuelo debe decidir qué agencia de viajes usar. Existen 4 agencias de viaje, y cada una ofrece descuentos si se cumplen determinadas condiciones. Por ejemplo, una de las agencias otorga un 35% de descuento en caso de volar con ella 3 veces consecutivas.</p>
+<p>The objective of the problem is to decide <em>in which order</em> cities should be visited and <em>which agency to use</em> in each flight, seeking to minimize the total cost, taking into account that all agencies have the same rate: $0.01 per Km.</p>
 
-<p>El objetivo del problema es decidir <em>en qué orden</em> se deben visitar las ciudades y <em>con qué agencia</em> en cada vuelo, buscando minimizar el costo total, teniendo en cuenta que todas las agencias tienen la misma tarifa: $0.01 por Km.</p>
+<p>A part of this problem (<em>in which order</em>) is related to another very famous problem: <a href="https://en.wikipedia.org/wiki/Travelling_salesman_problem">The traveling salesman problem</a>, which is very studied and for which there is <a href="http://www.math.uwaterloo.ca/tsp/index.html">much literature</a>.</p>
 
-<p>Una parte de este problema (<em>en qué orden</em>) está relacionada con otro problema muy famoso: <a href="https://es.wikipedia.org/wiki/Problema_del_viajante">El problema del viajante de comercio</a>, muy estudiado y para el cual existe <a href="http://www.math.uwaterloo.ca/tsp/index.html">mucha literatura</a>.</p>
+<h1 id="my-approach">My approach</h1>
 
-<h1 id="solución-propuesta">Solución propuesta</h1>
+<p>One of my favorite tools for tackling optimization problems is the <a href="https://en.wikipedia.org/wiki/Integer_programming"><strong>integer programming</strong></a>. To be simple, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are <strong>linear</strong>.</p>
 
-<p>Una de mis herramientas favoritas para atacar problemas de optimización es la <a href="https://en.wikipedia.org/wiki/Integer_programming"><strong>programación lineal entera</strong></a>. Sin entrar en muchos detalles, la idea es construir un modelo matemático que describa las condiciones impuestas por el problema y la función objetivo que se quiere minimizar. Como su nombre lo indica, es importante que las relaciones entre las variables del modelo sean <strong>lineales</strong>.</p>
+<p>I decided to split the original problem into two parts: 1) get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible); 2) look for <strong>the best</strong> possible way of assigning agencies to a given route.</p>
 
-<p>Decidí partir el problema original en dos partes: 1) obtener un recorrido inicial sin tener en cuenta las agencias, y en consecuencia sin descuentos (el recorrido debe visitar todas las ciudades exactamente una vez y sea lo más barato posible); 2) buscar <strong>la mejor</strong> forma posible de asignar agencias a un recorrido dado.</p>
+<p>Note that this is a <em>heuristic</em> since the optimal solution to the original problem is not necessarily obtained by assigning agencies to the shortest route, and often using a higher-cost route could induce greater discounts (given the conditions of the agencies), and consequently a lower total cost.</p>
 
-<p>Observar que esto es una <em>heurística</em>, dado que la solución óptima al problema original no necesariamente se obtiene asignando agencias al recorrido de menor costo, y muchas veces utilizar un recorrido de mayor costo podría inducir mayores descuentos (dadas las condiciones de las agencias), y en consecuencia un menor costo total.</p>
+<h2 id="stage-i-the-tour">Stage I: the tour</h2>
 
-<h2 id="etapa-i-el-recorrido">Etapa I: el recorrido</h2>
+<p>To get an initial tour (leaving aside the agencies), first I thought about using <a href="https://en.wikipedia.org/wiki/Concorde_TSP_Solver">Concorde</a>. This program allows you to get the optimal route as long as the number of cities is <em>reasonable</em>. I could not make Concorde work for 41011 cities, so I tried with the well-known <a href="https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic">Lin-Kernighan heuristic</a>, and in particular the implementation that is <a href="http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm">here</a>.</p>
 
-<p>Para conseguir un recorrido inicial (dejando de lado las agencias), en primer lugar pensé en usar <a href="https://en.wikipedia.org/wiki/Concorde_TSP_Solver">Concorde</a>. Este programa permite obtener el recorrido óptimo siempre y cuando la cantidad de ciudades sea <em>razonable</em>. No logré que Concorde funcione para las 41011 ciudades, y opté por utilizar la heurística <a href="https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic">Lin–Kernighan</a>, en particular la implementación que está <a href="http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm">acá</a>.</p>
+<p>The best route I got at this stage was <strong>7754930.68</strong> km.</p>
 
-<p>El mejor recorrido que obtuve en esta etapa fue de <strong>7754930.68</strong> km.</p>
+<h2 id="stage-ii-assigment">Stage II: assigment</h2>
+<h3 id="model">Model</h3>
 
-<h2 id="etapa-ii-asignación">Etapa II: asignación</h2>
-<h3 id="modelado">Modelado</h3>
+<p>If we consider the route of the previous stage and assign to all trips agency type D, we have a total cost of <strong>$65924.31</strong> that serves as a baseline.</p>
 
-<p>Si consideramos el recorrido de la etapa anterior y asignamos en todos los viajes la agencia D, tenemos un costo total de <strong>$65924.31</strong> que nos sirve como punto de partida.</p>
+<p>Now we want to get the <strong>best</strong> way to allocate agencies. For this purpose, I constructed a model with the variables <script type="math/tex">X_ {a, e}</script> where <script type="math/tex">a \in \{A, B, C, D \}</script> and <script type="math/tex">e</script> is an edge of the tour (the trip between two cities).</p>
 
-<p>Ahora queremos obtener la <strong>mejor</strong> forma de asignar las agencias. Para esto construí un modelo con las variables <script type="math/tex">X_{a,e}</script> donde <script type="math/tex">a \in \{A,B,C,D\}</script> y <script type="math/tex">e</script> es un tramo del recorrido.</p>
-
-<p>Si definimos:</p>
+<p>If we define:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
-X_{a,e} = \begin{cases} 1 & \mbox{si } a\mbox{ está asignada al tramo } e \\ 0 & \mbox{caso contrario} \end{cases} %]]></script>
+X_{a,e} = \begin{cases} 1 & \mbox{si } a\mbox{ is assigned to edge } e \\ 0 & \mbox{other case} \end{cases} %]]></script>
 
-<p>es posible modelar la restricción <code class="highlighter-rouge">todo tramo debe tener asignada una agencia</code> como:</p>
+<p>it is possible to model the constraint <code class="highlighter-rouge">every edge must have an agency assigned</code> as:</p>
 
 <script type="math/tex; mode=display">X_{A,e} + X_{B,e} + X_{C,e} + X_{D,e} = 1</script>
 
-<p>para cada tramo <script type="math/tex">e</script> en el recorrido.</p>
+<p>for each edge <script type="math/tex">e</script> in the route.</p>
 
-<p>Es necesario además modelar la función de costo que queremos minimizar. <code class="highlighter-rouge">La agencia B aplica un descuento del 15% siempre que el tramo asignado tenga más de 200km</code>. Teniendo en cuenta esto, podemos modelar el descuento de la agencia B como:</p>
+<p>It is also necessary to model the cost function that we want to minimize. <code class="highlighter-rouge">Agency B applies a discount of 15% provided that the assigned edge is more than 200km long</code>. Taking this into account, we can model the discount of agency B as:</p>
 
 <script type="math/tex; mode=display">\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e > 200) * 0.01</script>
 
-<p>donde <script type="math/tex">T</script> es el recorrido, y <script type="math/tex">w_e</script> es la distancia en kilómetros del tramo <script type="math/tex">e \in T</script>.</p>
+<p>where <script type="math/tex">T</script> is the tour, and <script type="math/tex">w_e</script> is the distance in kilometers of the edge <script type="math/tex">e \in T</script>.</p>
 
-<p>Por otro lado, <code class="highlighter-rouge">la agencia C aplica un descuento del 20% siempre que el tramo anterior tenga asignada la agencia B</code>. Para modelar este descuento, una posibilidad es incorporar las siguientes variables:</p>
+<p>On the other hand, <code class="highlighter-rouge">agency C applies a discount of 20% provided that the previous trip is assigned to agency B</code>. To model this discount, one possibility is to incorporate the following variables:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
-Y_{e_i,e_{i+1}} = \begin{cases} 1 & \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}} = 1 \\ 0 & \mbox{caso contrario} \end{cases} %]]></script>
+Y_{e_i,e_{i+1}} = \begin{cases} 1 & \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}} = 1 \\ 0 & \mbox{other case} \end{cases} %]]></script>
 
-<p>para cada par de tramos <script type="math/tex">(e_i,e_{i+1})</script> consecutivos en el recorrido.</p>
+<p>for each pair of consecutive edges <script type="math/tex">(e_i, e_{i + 1})</script> in the tour.</p>
 
-<p>La motivación de esta variable es poder saber cuándo hay una agencia B asignada antes que la agencia C, y así poder aplicar el descuento correspondiente. El descuento de la agencia C se modela entonces como:</p>
+<p>The motivation of this variable is to be able to know when there is an assigned agency B before agency C, and thus to be able to apply the corresponding discount. The discount of agency C is then modeled as:</p>
 
 <script type="math/tex; mode=display">\sum_{1\leq i \leq 41010} Y_{e_i,e_{i+1}} * w_{e_{i+1}} * 0.20 * 0.01</script>
 
-<p>Además es necesario establecer linealmente la relación entre las variables <script type="math/tex">Y_{e_i,e_{i+1}}</script>, <script type="math/tex">X_{B,e_i}</script> y <script type="math/tex">X_{C,e_{i+1}}</script> para que cumpla con la definición antes propuesta:</p>
+<p>In addition, it is necessary to linearly establish the relationship between the variables <script type="math/tex">Y_{e_i,e_{i+1}}</script>, <script type="math/tex">X_{B,e_i}</script> and <script type="math/tex">X_{C,e_{i+1}}</script> to meet the definition above:</p>
 
 <script type="math/tex; mode=display">Y_{e_i,e_{i+1}} \leq X_{B,e_i}</script>
 
@@ -464,22 +458,22 @@ Y_{e_i,e_{i+1}} = \begin{cases} 1 & \mbox{si } X_{B,e_i} = 1 \wedge X_{C,e_{i+1}
 
 <script type="math/tex; mode=display">Y_{e_i,e_{i+1}} + 1 \geq X_{B,e_i} + X_{C,e_{i+1}}</script>
 
-<p>para cada <script type="math/tex">i</script> tal que <script type="math/tex">1\leq i \leq 41010</script>.</p>
+<p>for each <script type="math/tex">i</script> such that <script type="math/tex">1 \leq i \leq 41010</script>.</p>
 
-<p>Para modelar el descuento de viajero frecuente, donde <code class="highlighter-rouge">la agencia A aplica un descuento del 35% cada vez que la agencia se utiliza por tercera vez consecutiva</code>, usamos una idea parecida. Incorporamos la variable:</p>
+<p>To model the frequent flyer discount, where <code class="highlighter-rouge">agency A applies a 35% discount every time the agency is used for the third consecutive time</code>, we use a similar idea. We add the variable:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
-Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,e_{i+1}} = 1 \wedge X_{A,e_{i+2}} = 1 \\ 0 & \mbox{caso contrario} \end{cases} %]]></script>
+Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,e_{i+1}} = 1 \wedge X_{A,e_{i+2}} = 1 \\ 0 & \mbox{other case} \end{cases} %]]></script>
 
-<p>para cada <script type="math/tex">i</script> tal que <script type="math/tex">1\leq i \leq 41009</script>.</p>
+<p>for each <script type="math/tex">i</script> such that <script type="math/tex">1 \leq i \leq 41009</script>.</p>
 
-<p>La motivación es saber que hay 3 asignaciones consecutivas de la agencia A y que entonces vale aplicar el descuento. La sutileza en este caso está en que si se tiene por ejemplo, 8 veces consecutivas la agencia A, el descuento aplica solo en el costo de la tercera y sexta vez, como aclara el <a href="https://almundo.com.ar/eci/faq">FAQ</a>. Por esta razón, vamos a pedir lo siguiente:</p>
+<p>The motivation is to know that there are 3 consecutive assignments of agency A and that it is worth applying the discount. The detail in this case is that if you have for example, 8 consecutive times agency A, the discount applies only in the cost of the third and sixth time, as clarified in the <a href="https://almundo.com.ar/eci/faq">FAQ</a>. For this reason, we also add the following constraint:</p>
 
 <script type="math/tex; mode=display">Y_{e_i,e_{i+1},e_{i+2}} + Y_{e_{i+1},e_{i+2},e_{i+3}} + Y_{e_{i+2},e_{i+3},e_{i+4}} \leq 1</script>
 
-<p>para cada <script type="math/tex">i</script> tal que <script type="math/tex">1\leq i \leq 41007</script>.</p>
+<p>for each <script type="math/tex">i</script> such that <script type="math/tex">1 \leq i \leq 41007</script>.</p>
 
-<p>Y también una versión adaptada de las restricciones anteriores:</p>
+<p>And also an adapted version of the previous restrictions:</p>
 
 <script type="math/tex; mode=display">Y_{e_i,e_{i+1},e_{i+2}} \leq X_{A,e_i}</script>
 
@@ -489,31 +483,31 @@ Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,
 
 <script type="math/tex; mode=display">Y_{e_{i-2},e_{i-1},e_i} + Y_{e_{i-1},e_i,e_{i+1}} + Y_{e_i,e_{i+1},e_{i+2}} + 2 \geq X_{A,e_i} + X_{A,e_{i+1}} + X_{A,e_{i+2}}</script>
 
-<p>con el ajuste correspondiente en los primeros 2 tramos del recorrido, según si hace falta <script type="math/tex">Y_{e_{i-2},e_{i-1},e_i}</script> y/o <script type="math/tex">Y_{e_{i-1},e_i,e_{i+1}}</script>.</p>
+<p>with the corresponding adjustment in the first 2 trips of the tour, where <script type="math/tex">Y_{e_{i-2},e_{i-1},e_i}</script> and/or <script type="math/tex">Y_{e_{i-1},e_i,e_{i+1}}</script> must not be added.</p>
 
-<p>Podemos entonces modelar el descuento como:</p>
+<p>We can then model the discount as:</p>
 
 <script type="math/tex; mode=display">\sum_{1\leq i \leq 41009} Y_{e_i,e_{i+1},e_{i+2}} * w_{e_{i+2}} * 0.35 * 0.01</script>
 
-<p>El último detalle es sobre el descuento por acumular kilómetros, donde <code class="highlighter-rouge">la agencia D reintegra un monto fijo de $15 cada 10000km recorridos con esta agencia</code>. Definimos <script type="math/tex">Y_D \in \mathbb{Z}_{\geq 0}</script> como:</p>
+<p>The last detail is about the discount of accumulating kilometers, where <code class="highlighter-rouge">agency D returns a fixed amount of $15 per 10000km traveled with this agency</code>. We define <script type="math/tex">Y_D \in \mathbb{Z}_{\geq 0}</script> as:</p>
 
 <script type="math/tex; mode=display">Y_D = \left\lfloor \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \right\rfloor</script>
 
-<p>como la cantidad de veces que descontamos $15. Para linearizar <script type="math/tex">Y_D</script> agregamos las siguientes restricciones:</p>
+<p>as the amount of times we discount $15. To linearize <script type="math/tex">Y_D</script> we add the following constraints:</p>
 
 <script type="math/tex; mode=display">\frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e \leq Y_D + (1-\epsilon)</script>
 
 <script type="math/tex; mode=display">Y_D \leq \frac{1}{10000} * \sum_{e \in T} X_{D,e} * w_e</script>
 
-<p>y modelamos el descuento simplemente como:</p>
+<p>and we model the discount simply as:</p>
 
 <script type="math/tex; mode=display">Y_D * 15</script>
 
-<p>Algo interesante es que como la función objetivo busca maximizar el descuento, la primera restricción sobre <script type="math/tex">Y_D</script> no será necesaria y la solución óptima será tal que se cumpla dicha restricción.</p>
+<p>Interestingly, since the objective function seeks to maximize the discount, the first restriction on <script type="math/tex">Y_D</script> will not be necessary and the optimal solution will be such that the restriction is met.</p>
 
-<p>Finalmente, la función objetivo a maximizar es:</p>
+<p>Finally, the objective function to be maximized is:</p>
 
-<script type="math/tex; mode=display">descuento =</script>
+<script type="math/tex; mode=display">discount =</script>
 
 <script type="math/tex; mode=display">\sum_{e\in T} X_{B,e} * w_e * 0.15 * (w_e > 200) * 0.01</script>
 
@@ -523,40 +517,44 @@ Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,
 
 <script type="math/tex; mode=display">+ Y_D * 15</script>
 
-<p>o de manera equivalente, queremos minimizar:</p>
+<p>or equivalently, we want to minimize:</p>
 
-<script type="math/tex; mode=display">\sum_{e\in T} w_e * 0.01 - descuento</script>
+<script type="math/tex; mode=display">\sum_{e\in T} w_e * 0.01 - discount</script>
 
-<h3 id="cómputo">Cómputo</h3>
+<h3 id="solving-the-model">Solving the model</h3>
 
-<p>Para resolver el modelo existen muchas alternativas, cada una con diferentes ventajas/desventajas. Durante la competencia consideré:</p>
+<p>To solve the model there are many alternatives, each with different advantages and disadvantages. During the competition I considered:</p>
 
 <ul>
-  <li><a href="https://pypi.python.org/pypi/PuLP">PuLP</a>, una librería de Python que permite escribir el modelo y llamar a solvers de propósito general.</li>
-  <li><a href="https://en.wikipedia.org/wiki/CPLEX">CPLEX</a>, de lo mejor (si no es el mejor) de los solvers de propósito general.</li>
+  <li>
+    <p><a href="https://pypi.python.org/pypi/PuLP">PuLP</a>, a Python library that allows you to code the model and call general-purpose solvers.</p>
+  </li>
+  <li>
+    <p><a href="https://en.wikipedia.org/wiki/CPLEX">CPLEX</a>, one of the best (if not the best) general purpose solvers.</p>
+  </li>
 </ul>
 
-<p>Utilicé PuLP para programar rápido el modelo y CPLEX para resolverlo.</p>
+<p>I used PuLP to quickly code the model and CPLEX to solve it.</p>
 
-<p>La asignación óptima sobre el recorrido mencionado anteriormente tiene un costo de <strong>$63828.5</strong> (es decir que mejoramos la solución en $2095.81).</p>
+<p>The optimal assignment over the aforementioned tour has a cost of <strong>$63828.5</strong> (that is, we improved the solution by $2095.81).</p>
 
-<h1 id="algunas-observaciones">Algunas observaciones</h1>
+<h1 id="notes">Notes</h1>
 
-<p>La mejor solución final la conseguí incorporando un poco de búsqueda local sobre la solución anterior para tratar de refinarla. Logré bajar a <strong>$63815.82</strong> únicamente intercambiando el orden de ciudades consecutivas.</p>
+<p>I got my best final solution by incorporating a little local search on the previous solution trying to improve it. I managed to get down to <strong>$63815.82</strong> only by swapping the order of consecutive cities.</p>
 
-<p>Una observación interesante es que es posible modelar el problema original (<strong>completo</strong>) utilizando programación lineal entera. Faltando unas horas para que termine la competencia, un amigo que estaba jugando (<em>fedepousa</em>) me pasó el modelo que había armado dado que él se estaba yendo de vacaciones y no podía dedicarle más tiempo. Su modelo es exacto para el problema completo, pero es impensable correrlo sobre toda la instancia. Tomé su modelo y lo incorporé como un operador de búsqueda local más, aplicándolo en <em>chunks</em> de mi mejor recorrido. Es un operador costoso en términos de tiempo, y aplicándolo en sub-recorridos de 20 ciudades, cada 20 ciudades, tardaba un poco menos de 2hs. Si bien se está resolviendo el <strong>óptimo</strong> en cada <em>chunk</em>, se corre el riesgo de empeorar la solución total dado que el operador no tiene visibilidad global del recorrido. Una combinación final de este operador, los intercambios, y nuevamente la asignación óptima que presenté antes, fue la que me dejó en el cuarto puesto con un recorrido de <strong>$63801.03</strong>. Gracias <em>fedepousa</em>!</p>
+<p>An interesting observation is that it is possible to model the original (<strong>complete</strong>) problem using integer programming. With only a few hours left to finish the competition, a friend who was playing (<em>fedepousa</em>) share me the model he had built since he was going on vacation and could not spend more time in the competition. This model was exact for the complete problem, but it is unthinkable to run it on the whole instance. I took his model and incorporated it as a local search operator, applying it in <em>chunks</em> of my best route. It is an expensive operator in terms of time, and applying it in sub-routes of 20 cities, every 20 cities, took a little less than 2 hours. Although the <strong>optimum</strong> in each chunk is being solved, there is a risk of deteriorating the total solution since the operator has no overall visibility of the route. A final combination of this operator, the simple swaps, and the optimal allocation that I presented before, was the one that left me in fourth place with a tour of <strong>$63801.03</strong>. Thanks <em>fedepousa</em>!</p>
 
-<p>El tiempo que pude dedicar durante los días de la competencia fue acotado y seguramente existan infinitas mejoras sobre el modelo propuesto. Creo también que sería valioso experimentar con más operadores de búsqueda local (y en particular con el modelo exacto para todo el problema).</p>
+<p>Finally, I would like to mention that the time that I could use during the few days of the competition was limited, and surely there are infinite improvements on the proposed model. I also think it would be valuable to experiment with more local search operators (and in particular with the exact model for the whole problem).</p>
 
-<h1 id="bibliografía">Bibliografía</h1>
-<p>Si te gustó la forma de pensar el problema, o tenés curiosidad sobre programación lineal entera o el problema del viajante de comercio, te recomiendo:</p>
+<h1 id="literature">Literature</h1>
+<p>If you liked the way I think about the problem, or feel curious about integer programming or the traveling salesman problem, I recommend:</p>
 
 <ul>
-  <li><a href="https://www.coursera.org/learn/discrete-optimization">Discrete-optimization</a>, un gran curso sobre Optimización Discreta en general (y programación entera en particular).</li>
+  <li><a href="https://www.coursera.org/learn/discrete-optimization">Discrete-optimization</a>, an excellent course on Discrete Optimization (and integer programming in particular).</li>
   <li>Cook, W. (2012). In pursuit of the traveling salesman: mathematics at the limits of computation. Princeton University Press.</li>
   <li>Applegate, D. L., Bixby, R. E., Chvatal, V., &amp; Cook, W. J. (2011). The traveling salesman problem: a computational study. Princeton university press.</li>
   <li>Wolsey, L. A. (1998). Integer programming. Wiley.</li>
-  <li>Williams, H. P. (2013). Model building in mathematical programming. John Wiley &amp; Sons. (gracias Isa por compartirlo!)</li>
+  <li>Williams, H. P. (2013). Model building in mathematical programming. John Wiley &amp; Sons. (thanks Isa for sharing!)</li>
 </ul>
 
       
@@ -749,7 +747,7 @@ Y_{e_i,e_{i+1},_{i+2}} = \begin{cases} 1 & \mbox{si } X_{A,e_i} = 1 \wedge X_{A,
             
               <div class="post-toc-content">
     <ol class=nav>
-      <li class="nav-item nav-level-1"> <a class="nav-link" href="#el-problema"> <span class="nav-number">1</span> <span class="nav-text">El Problema</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#solución-propuesta"> <span class="nav-number">2</span> <span class="nav-text">Solución propuesta</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-2"> <a class="nav-link" href="#etapa-i-el-recorrido"> <span class="nav-number">2.1</span> <span class="nav-text">Etapa I: el recorrido</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#etapa-ii-asignación"> <span class="nav-number">2.2</span> <span class="nav-text">Etapa II: asignación</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#modelado"> <span class="nav-number">2.2.1</span> <span class="nav-text">Modelado</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#cómputo"> <span class="nav-number">2.2.2</span> <span class="nav-text">Cómputo</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#algunas-observaciones"> <span class="nav-number">3</span> <span class="nav-text">Algunas observaciones</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#bibliografía"> <span class="nav-number">4</span> <span class="nav-text">Bibliografía</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
+      <li class="nav-item nav-level-1"> <a class="nav-link" href="#problem"> <span class="nav-number">1</span> <span class="nav-text">Problem</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#my-approach"> <span class="nav-number">2</span> <span class="nav-text">My approach</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-2"> <a class="nav-link" href="#stage-i-the-tour"> <span class="nav-number">2.1</span> <span class="nav-text">Stage I: the tour</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-2"> <a class="nav-link" href="#stage-ii-assigment"> <span class="nav-number">2.2</span> <span class="nav-text">Stage II: assigment</span> </a> <ol class="nav-child"> <li class="nav-item nav-level-3"> <a class="nav-link" href="#model"> <span class="nav-number">2.2.1</span> <span class="nav-text">Model</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-3"> <a class="nav-link" href="#solving-the-model"> <span class="nav-number">2.2.2</span> <span class="nav-text">Solving the model</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#notes"> <span class="nav-number">3</span> <span class="nav-text">Notes</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> </li></ol> </li></ol> </li></ol> </li></ol> </li></ol> </li> <li class="nav-item nav-level-1"> <a class="nav-link" href="#literature"> <span class="nav-number">4</span> <span class="nav-text">Literature</span> </a> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child"> <ol class="nav-child">
     </ol>
   </div>
             
