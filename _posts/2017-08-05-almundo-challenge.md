@@ -10,7 +10,7 @@ image:
 Last week I participated in the competition [AlMundo Challenge](https://almundo.com.ar/eci/contest)
 organized by [almundo.com](https://almundo.com.ar/) in the context of [ECI2017](https://www.dc.uba.ar/events/eci/2017).
 
-I found the problem interesting and, although the model I worked with came up in the 4th place (within the [(ranking)](https://almundo.com.ar/eci/ranking)), I would like to share it as an example of an integer programming application
+I found the problem interesting and, although the model I worked with came up in the 4th place (within the [ranking](https://almundo.com.ar/eci/ranking)), I would like to share it as an example of an **integer programming** application.
 
 # The problem
 
@@ -26,7 +26,11 @@ A part of this problem (*city order*) is related to another very famous problem:
 
 One of my favorite tools for tackling optimization problems is applying [**integer programming**](https://en.wikipedia.org/wiki/Integer_programming). To simplify, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are **linear**.
 
-I decided to split the original problem into two parts: 1) get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible); 2) look for **the best** possible way of assigning agencies to a given route.
+I decided to split the original problem into two parts:
+
+  1. Get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible).
+
+  2. Look for **the best** possible way of assigning agencies to a given route.
 
 Note that this is a *heuristic* since the optimal solution to the original problem is not necessarily obtained by assigning agencies to the shortest route, and often using a higher-cost route could induce greater discounts (given the conditions of the agencies), and consequently a lower total cost.
 

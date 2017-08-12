@@ -389,7 +389,7 @@
         <p>Last week I participated in the competition <a href="https://almundo.com.ar/eci/contest">AlMundo Challenge</a>
 organized by <a href="https://almundo.com.ar/">almundo.com</a> in the context of <a href="https://www.dc.uba.ar/events/eci/2017">ECI2017</a>.</p>
 
-<p>I found the problem interesting and, although the model I worked with came up in the 4th place (within the <a href="https://almundo.com.ar/eci/ranking">(ranking)</a>), I would like to share it as an example of an integer programming application</p>
+<p>I found the problem interesting and, although the model I worked with came up in the 4th place (within the <a href="https://almundo.com.ar/eci/ranking">ranking</a>), I would like to share it as an example of an <strong>integer programming</strong> application.</p>
 
 <h1 id="the-problem">The problem</h1>
 
@@ -405,7 +405,16 @@ organized by <a href="https://almundo.com.ar/">almundo.com</a> in the context of
 
 <p>One of my favorite tools for tackling optimization problems is applying <a href="https://en.wikipedia.org/wiki/Integer_programming"><strong>integer programming</strong></a>. To simplify, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are <strong>linear</strong>.</p>
 
-<p>I decided to split the original problem into two parts: 1) get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible); 2) look for <strong>the best</strong> possible way of assigning agencies to a given route.</p>
+<p>I decided to split the original problem into two parts:</p>
+
+<ol>
+  <li>
+    <p>Get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible).</p>
+  </li>
+  <li>
+    <p>Look for <strong>the best</strong> possible way of assigning agencies to a given route.</p>
+  </li>
+</ol>
 
 <p>Note that this is a <em>heuristic</em> since the optimal solution to the original problem is not necessarily obtained by assigning agencies to the shortest route, and often using a higher-cost route could induce greater discounts (given the conditions of the agencies), and consequently a lower total cost.</p>
 

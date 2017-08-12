@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-11T21:05:40-03:00</updated><id>http://localhost:4000/</id><title type="html">Welcome!</title><author><name>Agus Montero</name></author><entry><title type="html">AlMundo Challenge - ECI 2017</title><link href="http://localhost:4000/challenge/2017/08/05/almundo-challenge/" rel="alternate" type="text/html" title="AlMundo Challenge - ECI 2017" /><published>2017-08-05T00:00:00-03:00</published><updated>2017-08-05T00:00:00-03:00</updated><id>http://localhost:4000/challenge/2017/08/05/almundo-challenge</id><content type="html" xml:base="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">&lt;p&gt;Last week I participated in the competition &lt;a href=&quot;https://almundo.com.ar/eci/contest&quot;&gt;AlMundo Challenge&lt;/a&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.4.5">Jekyll</generator><link href="http://localhost:4000/atom.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2017-08-11T21:15:32-03:00</updated><id>http://localhost:4000/</id><title type="html">Welcome!</title><author><name>Agus Montero</name></author><entry><title type="html">AlMundo Challenge - ECI 2017</title><link href="http://localhost:4000/challenge/2017/08/05/almundo-challenge/" rel="alternate" type="text/html" title="AlMundo Challenge - ECI 2017" /><published>2017-08-05T00:00:00-03:00</published><updated>2017-08-05T00:00:00-03:00</updated><id>http://localhost:4000/challenge/2017/08/05/almundo-challenge</id><content type="html" xml:base="http://localhost:4000/challenge/2017/08/05/almundo-challenge/">&lt;p&gt;Last week I participated in the competition &lt;a href=&quot;https://almundo.com.ar/eci/contest&quot;&gt;AlMundo Challenge&lt;/a&gt;
 organized by &lt;a href=&quot;https://almundo.com.ar/&quot;&gt;almundo.com&lt;/a&gt; in the context of &lt;a href=&quot;https://www.dc.uba.ar/events/eci/2017&quot;&gt;ECI2017&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;I found the problem interesting and, although the model I worked with came up in the 4th place (within the &lt;a href=&quot;https://almundo.com.ar/eci/ranking&quot;&gt;(ranking)&lt;/a&gt;), I would like to share it as an example of an integer programming application&lt;/p&gt;
+&lt;p&gt;I found the problem interesting and, although the model I worked with came up in the 4th place (within the &lt;a href=&quot;https://almundo.com.ar/eci/ranking&quot;&gt;ranking&lt;/a&gt;), I would like to share it as an example of an &lt;strong&gt;integer programming&lt;/strong&gt; application.&lt;/p&gt;
 
 &lt;h1 id=&quot;the-problem&quot;&gt;The problem&lt;/h1&gt;
 
@@ -17,7 +17,16 @@ organized by &lt;a href=&quot;https://almundo.com.ar/&quot;&gt;almundo.com&lt;/a
 
 &lt;p&gt;One of my favorite tools for tackling optimization problems is applying &lt;a href=&quot;https://en.wikipedia.org/wiki/Integer_programming&quot;&gt;&lt;strong&gt;integer programming&lt;/strong&gt;&lt;/a&gt;. To simplify, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are &lt;strong&gt;linear&lt;/strong&gt;.&lt;/p&gt;
 
-&lt;p&gt;I decided to split the original problem into two parts: 1) get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible); 2) look for &lt;strong&gt;the best&lt;/strong&gt; possible way of assigning agencies to a given route.&lt;/p&gt;
+&lt;p&gt;I decided to split the original problem into two parts:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible).&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Look for &lt;strong&gt;the best&lt;/strong&gt; possible way of assigning agencies to a given route.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;p&gt;Note that this is a &lt;em&gt;heuristic&lt;/em&gt; since the optimal solution to the original problem is not necessarily obtained by assigning agencies to the shortest route, and often using a higher-cost route could induce greater discounts (given the conditions of the agencies), and consequently a lower total cost.&lt;/p&gt;
 
