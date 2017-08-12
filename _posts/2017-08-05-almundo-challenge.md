@@ -10,22 +10,21 @@ image:
 Last week I participated in the competition [AlMundo Challenge](https://almundo.com.ar/eci/contest)
 organized by [almundo.com](https://almundo.com.ar/) in the context of [ECI2017](https://www.dc.uba.ar/events/eci/2017).
 
-I found the problem interesting, and although the model I worked with was in 4th place [(ranking)](https://almundo.com.ar/eci/ranking), I would like to share it as an example of an integer programming application.
+I found the problem interesting and, although the model I worked with came up in the 4th place (within the [(ranking)](https://almundo.com.ar/eci/ranking)), I would like to share it as an example of an integer programming application
 
+# The problem
 
-# Problem
+The complete description can be found [here](https://almundo.com.ar/eci/contest).
 
-The complete description of the problem is [here](https://almundo.com.ar/eci/contest).
+In a nutshell, you are given the location of 41011 cities, and as a tourist you must fly to **all** the cities, visiting each of them **exactly once**. In addition, in each flight he must decide which travel agency to use. There are 4 travel agencies and each of them offers discounts if certain conditions are met. For example, one of the agencies grants a 35% discount in case of flying with them for 3 consecutive times.
 
-To sum up, you have the location of 41011 cities, and a tourist who must fly to **all** cities, visiting each of them **exactly once**. In addition, in each flight he must decide which travel agency to use. There are 4 travel agencies, and each offers discounts if certain conditions are met. For example, one of the agencies grants a 35% discount in case of flying with it for 3 consecutive times.
+The problem's objective is to decide *in which order* should the cities be visited and *which agency to use* in each flight, seeking to minimize the total cost (all agencies have the same rate: $0.01 per km).
 
-The objective of the problem is to decide *in which order* cities should be visited and *which agency to use* in each flight, seeking to minimize the total cost, taking into account that all agencies have the same rate: $0.01 per Km.
-
-A part of this problem (*in which order*) is related to another very famous problem: [The traveling salesman problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem), which is very studied and for which there is [much literature](http://www.math.uwaterloo.ca/tsp/index.html).
+A part of this problem (*city order*) is related to another very famous problem: [The traveling salesman problem](https://en.wikipedia.org/wiki/Travelling_salesman_problem), which is well-known and which has been studied by several people (see [TSP site](http://www.math.uwaterloo.ca/tsp/index.html)).
 
 # My approach
 
-One of my favorite tools for tackling optimization problems is the [**integer programming**](https://en.wikipedia.org/wiki/Integer_programming). To be simple, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are **linear**.
+One of my favorite tools for tackling optimization problems is applying [**integer programming**](https://en.wikipedia.org/wiki/Integer_programming). To simplify, the idea is to construct a mathematical model that describes the conditions imposed by the problem and the objective function to be minimized. As its name implies, it is important that the relationships between the model variables are **linear**.
 
 I decided to split the original problem into two parts: 1) get an initial tour without taking into account the agencies, and therefore without discounts (the tour should visit all cities exactly once and be as cheap as possible); 2) look for **the best** possible way of assigning agencies to a given route.
 
@@ -33,14 +32,14 @@ Note that this is a *heuristic* since the optimal solution to the original probl
 
 ## Stage I: the tour
 
-To get an initial tour (leaving aside the agencies), first I thought about using [Concorde](https://en.wikipedia.org/wiki/Concorde_TSP_Solver). This program allows you to get the optimal route as long as the number of cities is *reasonable*. I could not make Concorde work for 41011 cities, so I tried with the well-known [Lin-Kernighan heuristic](https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic), and in particular the implementation that is [here](http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm).
+To get an initial tour (leaving aside the agencies), first I thought about using [Concorde](https://en.wikipedia.org/wiki/Concorde_TSP_Solver). This program allows you to get the optimal route as long as the number of cities is *reasonable*. I could not make Concorde work for 41011 cities, so I tried with the well-known [Lin-Kernighan heuristic](https://en.wikipedia.org/wiki/Lin%E2%80%93Kernighan_heuristic), that is used [here](http://www.math.uwaterloo.ca/tsp/concorde/downloads/downloads.htm).
 
 The best route I got at this stage was **7754930.68** km.
 
 ## Stage II: assigment
 ### Model
 
-If we consider the route of the previous stage and assign to all trips agency type D, we have a total cost of **$65924.31** that serves as a baseline.
+If we consider the route of the previous stage and assign to all trips agency type D, we obtain a total cost of **$65924.31** that serves as a baseline.
 
 Now we want to get the **best** way to allocate agencies. For this purpose, I constructed a model with the variables $$ X_ {a, e} $$ where $$ a \in \{A, B, C, D \} $$ and $$ e $$ is an edge of the tour (the trip between two cities).
 
@@ -156,12 +155,12 @@ The optimal assignment over the aforementioned tour has a cost of **$63828.5** (
 
 I got my best final solution by incorporating a little local search on the previous solution trying to improve it. I managed to get down to **$63815.82** only by swapping the order of consecutive cities.
 
-An interesting observation is that it is possible to model the original (**complete**) problem using integer programming. With only a few hours left to finish the competition, a friend who was playing (*fedepousa*) share me the model he had built since he was going on vacation and could not spend more time in the competition. This model was exact for the complete problem, but it is unthinkable to run it on the whole instance. I took his model and incorporated it as a local search operator, applying it in *chunks* of my best route. It is an expensive operator in terms of time, and applying it in sub-routes of 20 cities, every 20 cities, took a little less than 2 hours. Although the **optimum** in each chunk is being solved, there is a risk of deteriorating the total solution since the operator has no overall visibility of the route. A final combination of this operator, the simple swaps, and the optimal allocation that I presented before, was the one that left me in fourth place with a tour of **$63801.03**. Thanks *fedepousa*!
+An interesting observation is that it is possible to model the original (**complete**) problem using integer programming. With only a few hours left to finish the competition, a friend who was playing (*fedepousa*) shared me the model he had built (since he was going on vacation and could not spend more time in the competition). This model was exact for the complete problem, but it is unthinkable to run it on the whole instance. I took his model and incorporated it as a local search operator, applying it in *chunks* of my best route. It is an expensive operator in terms of time, and applying it in sub-routes of 20 cities, every 20 cities, took a little less than 2 hours. Although the **optimum** in each chunk is being solved, there is a risk of deteriorating the total solution since the operator has no overall visibility of the route. A final combination of this operator, the simple swaps, and the optimal allocation that I presented before, was the one that got me in fourth place with a tour of **$63801.03**. Thanks *fedepousa*!
 
-Finally, I would like to mention that the time that I could use during the few days of the competition was limited, and surely there are infinite improvements on the proposed model. I also think it would be valuable to experiment with more local search operators (and in particular with the exact model for the whole problem).
+Finally, I would like to mention that he amount of time I was able to spend during the few days in which the competition took place, was limited. I am sure there are infinite improvements to the model I ended up with. Moreover, I think it would be valuable to experiment with more local search operators (and in particular with the exact model for the whole problem).
 
 # Literature
-If you liked the way I think about the problem, or feel curious about integer programming or the traveling salesman problem, I recommend:
+If you liked the way I tried to the problem, feel curious about integer programming or the traveling salesman problem, I recommend reading:
 
 * [Discrete-optimization](https://www.coursera.org/learn/discrete-optimization), an excellent course on Discrete Optimization (and integer programming in particular).
 * Cook, W. (2012). In pursuit of the traveling salesman: mathematics at the limits of computation. Princeton University Press.
